@@ -28,6 +28,11 @@ const settlementSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    status:{
+      type:String,
+      enum:["pending","fulfilled"],
+      default:"pending",
+    }
   },
   { timestamps: true }
 );

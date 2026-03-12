@@ -44,20 +44,32 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
               onClick={() => {
                 //the group we click on will get set as the selected group to make further req to the server to get the details of that group
                 setSelectedGroup(group);
-                console.log("hello i am the selected group", group);
               }}
               key={group._id}
-              className={`p-4 rounded-xl cursor-pointer border transition 
+              className={`p-4 border-2 border-blue-600 rounded-xl relative cursor-pointer transition 
                 ${
                   selectedGroup?._id === group._id
-                    ? "bg-white border-cyan-400"
-                    : "bg-cyan-300 hover:bg-gray-100"
+                    ? "bg-white text-blue-600 border-l-8"
+                    : "bg-blue-500 text-white"
                 }`}
             >
-              <h3 className="font-semibold text-gray-800">{group.groupName}</h3>
+              <div
+                className={`absolute right-3 top-3 rounded-full h-3 w-3 bg-blue-600 ${selectedGroup?._id === group._id ? "block" : "hidden"}`}
+              ></div>
+              <h3
+                className={`font-semibold ${selectedGroup?._id === group._id ? "text-blue-600" : "text-white"}`}
+              >
+                {group.groupName}
+              </h3>
 
-              <p className="text-sm text-gray-500 mt-1">
-                Last updated : {new Date(group.updatedAt).toLocaleString()}
+              <p className={`text-sm mt-1`}>
+                Created at:{" "}
+                {new Date(group.updatedAt).toLocaleString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
           ))

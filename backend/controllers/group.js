@@ -1,3 +1,4 @@
+import Activity from "../models/activity.js";
 import Group from "../models/group.js";
 import User from "../models/user.js"
 
@@ -87,4 +88,22 @@ async function getGroupDetail(req,res){
     }
 }
 
-export {createGroup,getUserGroups,getGroupDetail};
+//to fetch the activites taking place in the group
+async function getActivities(req,res){
+    try{
+        const {groupId}=req.params;
+
+        const activities=await Activity.find({groupId}); //newest first
+
+        res.status(200).json({
+            activities,
+        });
+    }catch(err){
+        console.log(err);
+        res.status(500).json({
+            message:"Failed to fetch the activites",
+        })
+    }
+}
+
+export {createGroup,getUserGroups,getGroupDetail,getActivities};

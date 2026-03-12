@@ -14,7 +14,7 @@ function Landing() {
       <div className="bg-gray-50 min-h-screen">
         {/* Hero Section */}
         <section className="text-center  py-20 px-6 bg-gray-900 text-white">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">SplitMates 💸</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Split<span className="text-cyan-400">Mates</span> 💸</h1>
           <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-8">
             Split the money 💵, not the friendship 🤝<br></br>
 Track every expense, split bills fairly, and settle up without awkward math.
@@ -22,13 +22,13 @@ Track every expense, split bills fairly, and settle up without awkward math.
 
           <div className="flex justify-center gap-4">
             <NavLink to="/signup">
-              <button className="bg-cyan-400 text-black px-6 py-3 rounded-xl font-semibold hover:bg-cyan-300 transition">
+              <button className="bg-cyan-400 cursor-pointer text-black px-6 py-3 rounded-xl font-semibold hover:bg-cyan-300 transition">
                 Get Started
               </button>
             </NavLink>
 
             <NavLink to="/login">
-              <button className="border border-cyan-400 px-6 py-3 rounded-xl font-semibold hover:bg-cyan-400 hover:text-black transition">
+              <button className="border border-cyan-400 cursor-pointer px-6 py-3 rounded-xl font-semibold hover:bg-cyan-400 hover:text-black transition">
                 Login
               </button>
             </NavLink>
@@ -80,7 +80,7 @@ Track every expense, split bills fairly, and settle up without awkward math.
             Ready to simplify your group expenses?
           </h2>
           <NavLink to="/signup">
-            <button className="bg-black text-white px-8 py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
+            <button className="bg-black text-white cursor-pointer px-8 py-3 rounded-xl font-semibold hover:bg-gray-800 transition">
               Join SplitMates Today 🚀
             </button>
           </NavLink>

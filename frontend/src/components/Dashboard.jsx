@@ -12,13 +12,13 @@ function Dashboard() {
     <div className="h-[670px] overflow-y-auto  bg-gray-100 flex">
 
       {/* LEFT SIDEBAR */}
-      <div className="w-[35%] bg-white border-r p-6 flex flex-col gap-6">
+      <div className="w-[35%] bg-blue-50 border-r border-blue-600 p-6 flex flex-col gap-6">
 
       
 
         <NavLink
           to="/create-group"
-          className="bg-cyan-500 text-white px-4 py-2 rounded-lg text-center font-semibold hover:bg-cyan-600 transition"
+          className="bg-blue-500 font-bold text-white px-4 py-2 rounded-lg text-center hover:bg-blue-400 transition"
         >
           + Create New Group
         </NavLink>

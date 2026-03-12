@@ -159,10 +159,8 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       title:titleOfPayment,
       description,
       totalAmount:Number(totalAmount),
-      
       paidBy:paidByData,
       paidFor:paidForData,
-
       createdBy:currentUserId,
     }
     console.log(payload)
@@ -211,7 +209,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
             <textarea
               value={description}
               onChange={(e)=>setDescription(e.target.value)}
-              className="bg-white  px-2 border rounded w-70 h-20 resize-none"
+              className="bg-white  px-2 border rounded resize-none"
               placeholder="optional description..."
             />
           </div>
