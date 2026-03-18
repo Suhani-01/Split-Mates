@@ -4,12 +4,13 @@ import { UserContext } from "../App";
 function SettlementsToDo({ groupDetails, selectedGroup }) {
   // console.log("I am inside the settlements",selectedGroup)
   const [refresh, setRefresh] = useState(false);
+  const [loading,setLoading]=useState(false);
 
 
-  const [settlements, setSettlements] = useState([]);
+  const [settlements, setSettlements] = useState(null);
 
   const [pendingSettlementsConfirmation, setPendingSettlementsConfirmation] =
-    useState([]);
+    useState(null);
   const { userDetails } = useContext(UserContext);
 
   //THIS map will be used to load the settlements that we obtain from the api as we obtain users id only not username
@@ -60,6 +61,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
 
   //payment recieved or not??
   async function paymentRecievedOrNot(id, isRecieved) {
+    setLoading(true);
     try {
       const API = "http://localhost:7000/api/expense/modify-settlement";
 
@@ -87,6 +89,8 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
     } catch (err) {
       console.log(err);
     }
+
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -114,23 +118,36 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
       } catch (err) {
         console.error(err);
       }
+
+      
     }
 
     getSettlementsToDo();
+
+    return(()=>{
+      setSettlements(null);
+      setLoading(false);
+      setPendingSettlementsConfirmation(null);
+    })
+   
   }, [selectedGroup?._id, refresh]);
 
   return (
     <div className="h-full">
-      {settlements.length === 0 &&
-        pendingSettlementsConfirmation.length === 0 && (
+      {settlements?.length === 0 &&
+        pendingSettlementsConfirmation?.length === 0 && (
           <div className="text-center rounded-2xl py-8 flex flex-col gap-3 bg-green-100">
             <div className="text-4xl">🎉</div>
             <div className="text-green-800 text-sm">All clear! No pending payments.</div>
           </div>
         )}
 
+      {(!settlements && !pendingSettlementsConfirmation)?
+      <div>Loading...</div>:<div></div>
+      }
+
       {/* for pending settlements */}
-      {pendingSettlementsConfirmation.length > 0 && (
+      {pendingSettlementsConfirmation?.length > 0 && (
         <>
           <div className="font-bold text-xs text-gray-400 mb-4">PENDING CONFIRMATIONS</div>
           <div className="flex flex-col mb-4 gap-2">
@@ -165,7 +182,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
                       </p>
 
                       <div className="flex gap-2 justify-center">
-                        <button
+                        <button disabled={loading}
                           onClick={() => {
                             paymentRecievedOrNot(s._id, true);
                           }}
@@ -173,7 +190,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
                         >
                           Yes
                         </button>
-                        <button
+                        <button disabled={loading}
                           onClick={() => {
                             paymentRecievedOrNot(s._id, false);
                           }}
@@ -193,7 +210,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
 
       {/********** GROUP BALANCES : somebody owes someones money *******/}
 
-      {settlements.length > 0 && (
+      {settlements?.length > 0 && (
         <>
           <div className="font-bold text-xs text-gray-400 mb-5">GROUP BALANCES</div>
 
@@ -227,7 +244,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
                 </div>
 
                 {userMap[s.from] === userDetails.userName && (
-                  <button
+                  <button disabled={loading}
                     onClick={() => paymentDone(s)}
                     className="bg-indigo-600 hover:bg-blue-600 text-white text-sm font-bold cursor-pointer px-4 py-2 rounded-md"
                   >

@@ -4,7 +4,7 @@ import UserRouter from "./routes/user.js";
 import PrivateRouter from "./routes/private.js";
 import GroupRouter from "./routes/group.js";
 import ExpenseRouter from "./routes/expense.js";
-
+import 'dotenv/config';
 
 
 import {restrictToLoggedInUserOnly} from "./middleware/auth.js"
@@ -30,7 +30,8 @@ app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 
 //connect MONGODB
-const URL="mongodb://127.0.0.1:27017/split-mates";
+// const URL="mongodb://127.0.0.1:27017/split-mates";
+const URL=process.env.MONGO_URI;
 mongoose.connect(URL).then(()=>console.log("MongoDB connected")).catch((err)=>console.log("Mongo Error",err));
 
 //making routes go to user routes

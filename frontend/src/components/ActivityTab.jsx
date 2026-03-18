@@ -20,7 +20,6 @@ function ActivityTab({ groupDetails }) {
 
 
   useEffect(() => {
-    setActities(null);
     async function getActivities(){
         try{
             const API=`http://localhost:7000/api/group/activites/${groupDetails._id}`;
@@ -37,7 +36,6 @@ function ActivityTab({ groupDetails }) {
                 console.log(data.message);
             }
 
-
         }catch(err){
             console.error(err);
         }
@@ -45,45 +43,47 @@ function ActivityTab({ groupDetails }) {
 
     getActivities();
 
+    return()=>{
+        setActities(null);
+    }
 
   }, [groupDetails._id]);
 
   return (
   <div className="">{
         activities ? 
-        
             (
                 activities.length===0 ?
                 <div className="text-center bg-green-100 rounded-xl py-5">No Activites Yet</div>
                 :
                 <div className="flex flex-col-reverse gap-3">
                     {
+                    // activity
                        activities.map((activity)=>(
-                            <div className="text-center bg-white" key={activity._id}>
+                            <div className="text-center overflow-hidden bg-white" key={activity._id}>
                                 {/* when an expense is added  */}
                                 {
                                     activity.type==='EXPENSE_ADDED' && (
-                                        <div className="overflow-hidden rounded-xl p-4 border-l-5 shadow-md border-l-blue-700 ">🧾 {
-                                            activity.performedBy.map((user,index)=>(
-                                                <span key={user}>
-                                                    <b>
-                                                    {user===userDetails._id?"You":userMap[user]}
-                                                    </b>
-                                                    {index<activity.performedBy.length-2 ?" , ":(index===activity.performedBy.length-2?" and ":"")}
-                                                </span>
-                                                 
-                                            ))
-                                        } added <b className="text-blue-700">₹{activity.amount}</b> for {activity.title} for {" "} 
-                                        {
-                                            activity.performedFor.map((user,index)=>(
-                                                <span key={user}>
-                                                    <b>{user===userDetails._id?"You":userMap[user]}</b>
-                                                    {index<activity.performedFor.length-2 ?" , ":(index===activity.performedFor.length-2?" and ":"")}
-                                                    
-                                                </span>
-                                                
-                                            ))
-                                        }
+                                        <div className="overflow-hidden rounded-xl p-4 border-l-5 shadow-md border-l-blue-700 ">🧾 
+                                            {
+                                                activity.performedBy.map((user,index)=>(
+                                                    <span key={user}>
+                                                        <b>
+                                                        {user===userDetails._id?"You":userMap[user]}
+                                                        </b>
+                                                        {index<activity.performedBy.length-2 ?" , ":(index===activity.performedBy.length-2?" and ":"")}
+                                                    </span>
+                                                ))
+                                            } 
+                                            added <b className="text-blue-700">₹{activity.amount}</b> for {activity.title} for {" "} 
+                                            {
+                                                activity.performedFor.map((user,index)=>(
+                                                    <span key={user}>
+                                                        <b>{user===userDetails._id?"You":userMap[user]}</b>
+                                                        {index<activity.performedFor.length-2 ?" , ":(index===activity.performedFor.length-2?" and ":"")}
+                                                    </span>
+                                                ))
+                                            }
                                         </div>
                                     )
                                 }
@@ -117,16 +117,14 @@ function ActivityTab({ groupDetails }) {
                                     )
                                 }
 
-
                             </div>
                         )) 
                     }
-                    
                 </div>
             )
     
         :
-        <div>loading...</div>
+        <div>Loading...</div>
     }
     
   </div>

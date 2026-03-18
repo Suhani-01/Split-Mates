@@ -35,9 +35,9 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
         My Groups
       </h1>
 
-      <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
+      <div className="flex flex-col-reverse gap-3 overflow-y-auto">
         {errorMessage ? (
-          <p className="text-gray-500 text-sm">{errorMessage}</p>
+          <p className="text-gray-500 flex-1 mx-auto text-sm">{errorMessage}</p>
         ) : (
           groups.map((group) => (
             <div

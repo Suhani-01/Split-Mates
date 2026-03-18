@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { UserContext } from "../App";
 
@@ -6,10 +6,10 @@ function SearchUser({selectedUsers,setSelectedUsers}) {
   const {userDetails}=useContext(UserContext);
   
   const [user, setUser] = useState("");
-  const [results, setResults] = useState([]); // store the search results
+  const [results, setResults] = useState(null); // store the search results
   const [errorMessage, setErrorMessage] = useState(""); // store error message
 
- 
+  
 
   const handleAddUser = (userToAdd) => {
     // check if user already selected
@@ -48,7 +48,7 @@ function SearchUser({selectedUsers,setSelectedUsers}) {
       if (!res.ok) {
         // show error message below search bar
         setErrorMessage(data.message || "Error searching user");
-        setResults([]); // clear previous results
+        setResults(null); // clear previous results
       } else {
         setResults(data);
         setErrorMessage(""); // clear error
@@ -60,6 +60,17 @@ function SearchUser({selectedUsers,setSelectedUsers}) {
     }
   };
 
+  //Debouncing.....
+  useEffect(()=>{
+    const timerid=setTimeout(()=>{
+      handleSearch();
+    },500);
+
+    return()=>{
+      clearTimeout(timerid);
+    }
+  },[user]);
+
   return (
   <div className="p-4 pt-6 mx-auto  bg-white rounded-xl h-full shadow-lg px-4 flex flex-col items-center w-full max-w-md">
       <div className="flex gap-2 w-full">
@@ -69,12 +80,6 @@ function SearchUser({selectedUsers,setSelectedUsers}) {
           value={user}
           onChange={handleChange}
         />
-        <button
-          onClick={handleSearch}
-          className="cursor-pointer text-white font-bold px-6 py-2 rounded-xl bg-blue-600"
-        >
-          Search
-        </button>
       </div>
 
       {/* Show error message */}
@@ -83,7 +88,7 @@ function SearchUser({selectedUsers,setSelectedUsers}) {
       )}
 
       {/* Show results */}
-      {results.length > 0 && (
+      {results?.length > 0 && (
         <div className="mt-4 w-full bg-white rounded-xl">
           <ul className="space-y-2">
             {results.map((u, i) => (
@@ -107,7 +112,7 @@ function SearchUser({selectedUsers,setSelectedUsers}) {
       )}
 
       {/* No results found */}
-      {results.length === 0 && !errorMessage && user && (
+      {!results && !errorMessage && user && (
         <p className="mt-2 text-gray-700">No users found</p>
       )}
     </div>

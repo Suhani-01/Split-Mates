@@ -49,7 +49,7 @@ function Navbar() {
         <div className="flex items-center gap-4">
           {/* Logged in User Identity */}
           <div className="flex items-center gap-2 bg-slate-800 py-1.5 pl-2 pr-4 rounded-full border border-slate-700">
-            <div className="w-8 h-8 bg-cyan-400 text-slate-900 rounded-full flex items-center justify-center font-black text-xs">
+            <div className="w-8 h-8 bg-cyan-400 text-slate-900 rounded-full flex items-center justify-center font-black">
               {userDetails.userName.charAt(0).toUpperCase()}
             </div>
             <span className="text-sm font-bold text-slate-200">{userDetails.userName}</span>

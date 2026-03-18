@@ -124,6 +124,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       return;
     }
 
+    //paid for data
     // [ {userId:'............. , amount : 920} ]
     const paidForData=paidFor.map((name)=>{
       const member=members.find(m=>m.userName===name);

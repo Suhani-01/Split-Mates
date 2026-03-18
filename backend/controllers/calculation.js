@@ -42,7 +42,9 @@ async function calculateGroupSettlements(req, res) {
     const settlementsOfGroup = await Settlement.find({ groupId });
 
     //pending settlements .... A paid B but B ne abhi tk confirm nahi kra ki he/she recieved the payment
-    const currentUserId = req.user._id.toString(); // Fixed: toString() for safe comparison
+    const currentUserId = req.user._id.toString();
+
+    //pedning settlements of the settlmnt db
     const pendingSettlementsOfGroup = settlementsOfGroup.filter(
       (st) =>
         st.status === "pending" &&
