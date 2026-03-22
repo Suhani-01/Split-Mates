@@ -2,8 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 
 function MakeEntry({ setMakeEntry, groupDetails }) {
-  const {userDetails}=useContext(UserContext);
- 
+  const { userDetails } = useContext(UserContext);
 
   // console.log(userDetails);
   // console.log(groupDetails)
@@ -11,36 +10,31 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
   //this include each member username and its _id
   const members = groupDetails?.members || [];
 
-
   const currentUser = userDetails.userName || "";
-  console.log(userDetails)
-  const currentUserId=userDetails._id || "";
+  const currentUserId = userDetails._id || "";
 
+  //Title and description of the payment
+  const [titleOfPayment, setTitleOfPayment] = useState("");
+  const [description, setDescription] = useState("");
 
-  //to set the title and description of the payment
-  const [titleOfPayment,setTitleOfPayment]=useState("");
-  const [description,setDescription]=useState("");
-
-  //multiple payer?? or just a single payer
+  //Multiple Payer?? or just a Single payer
   const [isMultiplePayer, setIsMultiplePayer] = useState(false);
-  //splitting eqally among selected users???
+
+  //Splitting Eqally Among Selected Users???
   const [splitEqually, setSplitEqually] = useState(true);
 
-
-  //total amount we are paying
+  //Total Amount
   const [totalAmount, setTotalAmount] = useState("");
 
-  //who are paying the cost yarrrr
+  //Who are paying the cost //CREDITOR
   const [selectedPayer, setSelectedPayer] = useState([currentUser]);
   // payer->amount
   const [payerAmount, setPayerAmount] = useState({});
 
-
-  //for who we are paying yarrr...
+  //For who we are paying //DEBTOR
   const [paidFor, setPaidFor] = useState([]);
-  // member -> amount
+  //Member -> Amount
   const [splitMoney, setSplitMoney] = useState({});
-  
 
   useEffect(() => {
     // reset everything for new group
@@ -52,7 +46,6 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     setSplitEqually(true);
     setIsMultiplePayer(false);
     setSelectedPayer([currentUser]);
-    
   }, [groupDetails]);
 
   // splitting logic
@@ -107,33 +100,56 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
   };
 
   //add the payment in the db *********************
-  async function addPayment(e){
+  async function addPayment(e) {
     e.preventDefault();
-  
-    if(paidFor.length===0){
+
+    if (paidFor.length === 0) {
       alert("Select the people you are paying for");
       return;
     }
 
-    if(!totalAmount) {
-      alert("Enter a valid amount")
+    if (!totalAmount) {
+      alert("Enter a valid amount");
       return;
     }
-    if(titleOfPayment.trim().length===0){
-      alert("Enter a title please")
+    if (titleOfPayment.trim().length === 0) {
+      alert("Enter a title please");
       return;
     }
+
+    //check if in case of manual split the sum of money is equal to total Amount
+    if(!splitEqually){
+      let totalSumOfAmount = 0;
+      let hasError=false;
+      paidFor.forEach((member,i,arr) => {
+        if(!arr[member]) {
+          alert(`Missing split for ${member}`);
+          hasError=true;
+          return;
+        }
+        totalSumOfAmount += Number(arr[member]);
+      });
+      if(hasError) return;
+
+      if(totalSumOfAmount!=totalAmount){
+      alert(`The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`)
+      return;
+    }
+    }
+    
+
+    
 
     //paid for data
     // [ {userId:'............. , amount : 920} ]
-    const paidForData=paidFor.map((name)=>{
-      const member=members.find(m=>m.userName===name);
+    const paidForData = paidFor.map((name) => {
+      const member = members.find((m) => m.userName === name);
 
       return {
-        userId:member._id,
-        amount:splitMoney[name],
-      }
-    })
+        userId: member._id,
+        amount: splitMoney[name],
+      };
+    });
 
     //paid by
     // const paidByData=selectedPayer.map((name)=>{
@@ -147,188 +163,244 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
     //abhi bhs ek payer haiii baad me multiple kr denge
 
-    const paidByData=[
+    const paidByData = [
       {
-        userId:currentUserId,
-        amount:Number(totalAmount),
-      }
+        userId: currentUserId,
+        amount: Number(totalAmount),
+      },
     ];
 
     //the datat we will send to the backend
-    const payload={
-      groupId:groupDetails._id,
-      title:titleOfPayment,
+    const payload = {
+      groupId: groupDetails._id,
+      title: titleOfPayment,
       description,
-      totalAmount:Number(totalAmount),
-      paidBy:paidByData,
-      paidFor:paidForData,
-      createdBy:currentUserId,
-    }
-    console.log(payload)
+      totalAmount: Number(totalAmount),
+      paidBy: paidByData,
+      paidFor: paidForData,
+      createdBy: currentUserId,
+    };
+    console.log(payload);
 
-    const API="http://localhost:7000/api/expense/create-expense";
-    
-    const res=await fetch(API,{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
+    const API = "http://localhost:7000/api/expense/create-expense";
+
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
       credentials: "include", // send cookie automatically cross origin ke case me bhejna pdta hai same me hota tho nahi bhejna pdta browser automatically bhej deta
-      body:JSON.stringify(payload),
-    })
+      body: JSON.stringify(payload),
+    });
 
-    const data=await res.json();
+    const data = await res.json();
 
-    if(!res.ok){
-      alert(data.message || "Something went wrong")
-      
+    if (!res.ok) {
+      alert(data.message || "Something went wrong");
+
       return;
     }
 
     alert("Expense added");
     setMakeEntry(false);
-
-
   }
 
   return (
-    <form onSubmit={addPayment} className="h-full p-5 flex flex-col justify-between">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-10">
+    <form
+      onSubmit={addPayment}
+      className="flex flex-col h-full bg-gray-50 rounded-xl overflow-hidden shadow-sm"
+    >
 
-          {/* Title */}
-          <div className="flex gap-3">
-            <label className="font-bold">Title</label>
-            <input value={titleOfPayment} onChange={(e)=>{
-              setTitleOfPayment(e.target.value)
-            }} required className="bg-white px-2 flex-1 border rounded" />
-          </div>
-
-          {/* Description */}
-          <div className="flex gap-3">
-            <label className="font-bold">Description</label>
-            <textarea
-              value={description}
-              onChange={(e)=>setDescription(e.target.value)}
-              className="bg-white  px-2 border rounded resize-none"
-              placeholder="optional description..."
+      <div className="flex-1 overflow-y-auto p-6 space-y-8">
+        {/* Section 1: Basic Info */}
+        <section className="space-y-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-700">Title</label>
+            <input
+              value={titleOfPayment}
+              onChange={(e) => setTitleOfPayment(e.target.value)}
+              required
+              placeholder="e.g. Dinner at Mario's"
+              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
             />
           </div>
 
-          {/* Amount + payer */}
-          <div className="flex gap-3 justify-between">
-            <div className="flex gap-3">
-              <label className="font-bold">Paid</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-gray-700">
+              Description (Optional)
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows="2"
+              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none transition-all"
+              placeholder="What was this for?"
+            />
+          </div>
+        </section>
 
-              <input
-                placeholder="enter the amount you paid"
-                value={totalAmount}
-                type="number"
-                onChange={(e) => setTotalAmount(e.target.value)}
-                className="border w-70 h-6 px-1 bg-white rounded"
-              />
 
-              <label className="font-bold">By</label>
-
-              {!isMultiplePayer && <p>{currentUser}</p>}
-
-              {isMultiplePayer && (
-                <div className="flex flex-col gap-2">
-                  {members.map((member) => (
-                    <label key={member._id} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedPayer.includes(member.userName)}
-                        onChange={() => handleUserToggle(member.userName)}
-                        disabled={member.userName === currentUser}
-                      />
-
-                      {member.userName}
-                    </label>
-                  ))}
-                </div>
-              )}
+        {/* Section 2: Amount & Payer */}
+        <section className="space-y-4">
+          <div className="flex items-end gap-4">
+            <div className="flex-1 flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-gray-700">
+                Total Amount
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-2 text-gray-400">₹</span>
+                <input
+                  type="number"
+                  value={totalAmount}
+                  onChange={(e) => setTotalAmount(e.target.value)}
+                  placeholder="0"
+                  className="w-full pl-8 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+              </div>
             </div>
 
-            {/* multiple payer toggle */}
-            <div className="flex h-6 gap-3 px-2">
+            <div className="flex items-center gap-2 mb-2 p-2 bg-blue-50 rounded-lg border border-blue-100">
               <input
                 type="checkbox"
+                id="multiPayer"
                 checked={isMultiplePayer}
                 onChange={() => {
                   setIsMultiplePayer(!isMultiplePayer);
                   setSelectedPayer([currentUser]);
                 }}
+                className="w-4 h-4 text-blue-600 rounded cursor-pointer"
               />
-
-              <span>Multiple Payers</span>
+              <label
+                htmlFor="multiPayer"
+                className="text-xs font-medium text-blue-700 cursor-pointer"
+              >
+                Multiple Payers
+              </label>
             </div>
           </div>
 
-          {/* Paid for */}
-          <div className="flex justify-between">
-            <div className="flex gap-3">
-              <label className="font-bold">For</label>
-
-              <div className="flex flex-col gap-2">
-                <label>
-                  <input
-                    onChange={handleSelectAll}
-                    checked={paidFor.length === members.length}
-                    className="mr-2 cursor-pointer"
-                    type="checkbox"
-                  />
-                  Select All
-                </label>
-
+          <div className="bg-white p-4 rounded-lg border border-gray-100">
+            <label className="text-xs uppercase tracking-wider font-bold text-gray-400 block mb-3">
+              Paid By
+            </label>
+            {!isMultiplePayer ? (
+              <div className="flex items-center gap-2 text-gray-700 font-medium bg-gray-50 p-2 rounded">
+                <div className="w-6 h-6 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center">
+                  You
+                </div>
+                {currentUser}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
                 {members.map((member) => (
-                  <div key={member._id} className="flex gap-2">
+                  <label
+                    key={member._id}
+                    className={`flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-colors ₹{selectedPayer.includes(member.userName) ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-transparent hover:bg-gray-100"}`}
+                  >
                     <input
-                      className="cursor-pointer"
+                      type="checkbox"
+                      checked={selectedPayer.includes(member.userName)}
+                      onChange={() => handleUserToggle(member.userName)}
+                      disabled={member.userName === currentUser}
+                      className="rounded text-blue-600"
+                    />
+                    <span className="text-sm text-gray-600">
+                      {member.userName}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Section 3: Splitting */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center">
+            <label className="text-sm font-semibold text-gray-700">
+              Split Between
+            </label>
+            <button
+              type="button"
+              onClick={() => setSplitEqually(!splitEqually)}
+              className="bg-green-200 text-xs text-green-600 font-semibold py-1 cursor-pointer rounded-xl px-4"
+            >
+              {splitEqually ? "Splitting Equally" : "Manual Split"}
+            </button>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div className="p-3 bg-gray-50 border-b flex justify-between items-center">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  onChange={handleSelectAll}
+                  checked={paidFor.length === members.length}
+                  type="checkbox"
+                  className="rounded"
+                />
+                <span className="text-xs font-bold text-gray-500 uppercase">
+                  Select All Members
+                </span>
+              </label>
+            </div>
+
+            <div className="divide-y divide-gray-100">
+              {members.map((member) => (
+                <div
+                  key={member._id}
+                  className="flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+                >
+                  <label className="flex items-center gap-3 cursor-pointer flex-1">
+                    <input
                       type="checkbox"
                       checked={paidFor.includes(member.userName)}
                       onChange={() => handlePaidForToggle(member.userName)}
+                      className="w-4 h-4 rounded text-blue-600"
                     />
+                    <span className="text-sm font-medium text-gray-700">
+                      {member.userName}
+                    </span>
+                  </label>
 
-                    <label>{member.userName}</label>
-
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-400">₹</span>
                     <input
+  
+                    type="number"
                       disabled={
                         splitEqually || !paidFor.includes(member.userName)
                       }
+                      onChange={(e)=>{
+                         setSplitMoney(prev=>({
+                          ...prev,
+                          [member.userName]:e.target.value,
+                         }));
+                      }}  
                       value={splitMoney[member.userName] || 0}
-                      className="bg-white px-2 border rounded"
+                      className={`w-20 text-right px-2 py-1 border rounded text-sm ₹{!splitEqually && paidFor.includes(member.userName) ? "bg-white border-blue-300" : "bg-gray-100 border-transparent text-gray-400"}`}
                     />
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              <input
-                className="h-7"
-                type="checkbox"
-                checked={splitEqually}
-                onChange={() => setSplitEqually(!splitEqually)}
-              />
-
-              <label>Split Equally</label>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* buttons */}
-      <div className="flex gap-4 mt-4">
+      {/* Footer Actions */}
+      <div className="p-6 bg-white border-t flex gap-3">
         <button
-          className="bg-red-200 cursor-pointer flex-1 h-10 rounded"
+          type="button"
           onClick={() => setMakeEntry(false)}
+          className="flex-1 cursor-pointer px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
         >
-          Close
+          Cancel
         </button>
-
-        <button type="submit" className="flex-1 cursor-pointer text-white rounded bg-blue-600">
-          Submit
+        <button
+          type="submit"
+          className="flex-[2] cursor-pointer px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md shadow-blue-200 transition-all active:scale-[0.98]"
+        >
+          Save Transaction
         </button>
       </div>
     </form>
