@@ -21,7 +21,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
   const [isMultiplePayer, setIsMultiplePayer] = useState(false);
 
   //Splitting Eqally Among Selected Users???
-  const [splitEqually, setSplitEqually] = useState(true);
+  const [splitDebtorEqually, setSplitDebtorEqually] = useState(true);
 
   //Total Amount
   const [totalAmount, setTotalAmount] = useState("");
@@ -30,6 +30,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
   const [selectedPayer, setSelectedPayer] = useState([currentUser]);
   // payer->amount
   const [payerAmount, setPayerAmount] = useState({});
+  const [splitPayerEqually, setSplitPayerEqually] = useState(true);
 
   //For who we are paying //DEBTOR
   const [paidFor, setPaidFor] = useState([]);
@@ -43,12 +44,12 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     setDescription("");
     setPaidFor([]);
     setSplitMoney({});
-    setSplitEqually(true);
+    setSplitDebtorEqually(true);
     setIsMultiplePayer(false);
     setSelectedPayer([currentUser]);
   }, [groupDetails]);
 
-  // splitting logic
+  // splitting money between debtor
   useEffect(() => {
     const amount = Number(totalAmount);
 
@@ -61,17 +62,40 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
     const split = {};
 
-    if (splitEqually) {
+    if (splitDebtorEqually) {
       paidFor.forEach((member) => {
         split[member] = amountPerPerson;
       });
     }
 
     setSplitMoney(split);
-  }, [totalAmount, paidFor, splitEqually]);
+  }, [totalAmount, paidFor, splitDebtorEqually]);
+
+  //for splitting the total amount between the payers
+  useEffect(() => {
+    const amount = Number(totalAmount);
+
+    if (!amount) {
+      setPayerAmount({});
+      return;
+    }
+
+    if (!isMultiplePayer) {
+      setPayerAmount({ [currentUser]: amount });
+    } else if (splitPayerEqually && selectedPayer.length > 0) {
+      const perPayer = amount / selectedPayer.length;
+
+      const newPayerAmount = {};
+
+      selectedPayer.forEach((name) => {
+        newPayerAmount[name] = perPayer;
+      });
+      setPayerAmount(newPayerAmount);
+    }
+  }, [totalAmount, selectedPayer, splitPayerEqually, isMultiplePayer]);
 
   // payer toggle
-  const handleUserToggle = (name) => {
+  const handlePayerToggle = (name) => {
     if (name === currentUser) return;
 
     if (selectedPayer.includes(name)) {
@@ -118,38 +142,64 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     }
 
     //check if in case of manual split the sum of money is equal to total Amount
-    if(!splitEqually){
+    if (!splitDebtorEqually) {
       let totalSumOfAmount = 0;
-      let hasError=false;
-      paidFor.forEach((member,i,arr) => {
-        if(!arr[member]) {
+      let hasError = false;
+
+      paidFor.forEach((member, i, arr) => {
+        if (!arr[member]) {
           alert(`Missing split for ${member}`);
-          hasError=true;
+          hasError = true;
           return;
         }
         totalSumOfAmount += Number(arr[member]);
       });
-      if(hasError) return;
+      if (hasError) return;
 
-      if(totalSumOfAmount!=totalAmount){
-      alert(`The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`)
-      return;
+      if (totalSumOfAmount != totalAmount) {
+        alert(
+          `The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`,
+        );
+        return;
+      }
     }
-    }
-    
 
-    
+    if (isMultiplePayer && !splitPayerEqually) {
+      let totalSumOfPayer = 0;
+      let hasPayerError = false;
+
+      selectedPayer.forEach((payerName) => {
+        const amount = Number(payerAmount[payerName]);
+
+        if (!amount || Number(amount) <= 0) {
+          alert(`Please enter a valid amount for payer : ${payerName}`);
+          hasPayerError = true;
+          return;
+        }
+        totalSumOfPayer += amount;
+      });
+      if (hasPayerError) return;
+
+      if (totalSumOfPayer != totalAmount) {
+        alert(
+          `The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`,
+        );
+        return;
+      }
+    }
 
     //paid for data
     // [ {userId:'............. , amount : 920} ]
-    const paidForData = paidFor.map((name) => {
-      const member = members.find((m) => m.userName === name);
+    const paidForData = paidFor
+      .map((name) => {
+        const member = members.find((m) => m.userName === name);
 
-      return {
-        userId: member._id,
-        amount: splitMoney[name],
-      };
-    });
+        return {
+          userId: member._id,
+          amount: splitMoney[name],
+        };
+      })
+      .filter((p) => p.amount > 0);
 
     //paid by
     // const paidByData=selectedPayer.map((name)=>{
@@ -163,12 +213,23 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
     //abhi bhs ek payer haiii baad me multiple kr denge
 
-    const paidByData = [
-      {
-        userId: currentUserId,
-        amount: Number(totalAmount),
-      },
-    ];
+    // const paidByData = [
+    //   {
+    //     userId: currentUserId,
+    //     amount: Number(totalAmount),
+    //   },
+    // ];
+
+    const paidByData = selectedPayer
+      .map((name) => {
+        const member = members.find((m) => m.userName === name);
+
+        return {
+          userId: member._id,
+          amount: Number(payerAmount[name]) || 0,
+        };
+      })
+      .filter((p) => p.amount > 0); //send only the one whose payment is greater than 0
 
     //the datat we will send to the backend
     const payload = {
@@ -208,58 +269,60 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
   return (
     <form
       onSubmit={addPayment}
-      className="flex flex-col h-full bg-gray-50 rounded-xl overflow-hidden shadow-sm"
+      className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
     >
-
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
         {/* Section 1: Basic Info */}
         <section className="space-y-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-gray-700">Title</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Title
+            </label>
             <input
               value={titleOfPayment}
               onChange={(e) => setTitleOfPayment(e.target.value)}
               required
               placeholder="e.g. Dinner at Mario's"
-              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all text-sm"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
               Description (Optional)
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows="2"
-              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none transition-all"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none resize-none transition-all text-sm"
               placeholder="What was this for?"
             />
           </div>
         </section>
 
-
         {/* Section 2: Amount & Payer */}
         <section className="space-y-4">
           <div className="flex items-end gap-4">
             <div className="flex-1 flex flex-col gap-1.5">
-              <label className="text-sm font-semibold text-gray-700">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
                 Total Amount
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-2 text-gray-400">₹</span>
+                <span className="absolute left-3 top-2.5 text-gray-400 text-sm">
+                  ₹
+                </span>
                 <input
                   type="number"
                   value={totalAmount}
                   onChange={(e) => setTotalAmount(e.target.value)}
                   placeholder="0"
-                  className="w-full pl-8 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full pl-8 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none text-sm"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-2 mb-2 p-2 bg-blue-50 rounded-lg border border-blue-100">
+            <div className="flex items-center gap-2 h-[42px] px-3 bg-blue-50 rounded-lg border border-blue-100">
               <input
                 type="checkbox"
                 id="multiPayer"
@@ -272,42 +335,75 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
               />
               <label
                 htmlFor="multiPayer"
-                className="text-xs font-medium text-blue-700 cursor-pointer"
+                className="text-xs font-semibold text-blue-700 cursor-pointer whitespace-nowrap"
               >
                 Multiple Payers
               </label>
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg border border-gray-100">
-            <label className="text-xs uppercase tracking-wider font-bold text-gray-400 block mb-3">
-              Paid By
-            </label>
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                Paid By
+              </label>
+              {isMultiplePayer && (
+                <button
+                  type="button"
+                  onClick={() => setSplitPayerEqually(!splitPayerEqually)}
+                  className={`text-[10px] px-3 py-1 rounded-full font-bold transition-colors ${splitPayerEqually ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}
+                >
+                  {splitPayerEqually ? "SPLIT EQUALLY" : "MANUAL SPLIT"}
+                </button>
+              )}
+            </div>
+
             {!isMultiplePayer ? (
-              <div className="flex items-center gap-2 text-gray-700 font-medium bg-gray-50 p-2 rounded">
-                <div className="w-6 h-6 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center">
-                  You
+              <div className="flex items-center gap-3 text-sm text-gray-700 font-medium bg-white p-2.5 rounded-lg border border-gray-100">
+                <div className="w-7 h-7 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
+                  YOU
                 </div>
                 {currentUser}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
                 {members.map((member) => (
-                  <label
+                  <div
                     key={member._id}
-                    className={`flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-colors ₹{selectedPayer.includes(member.userName) ? "bg-blue-50 border-blue-200" : "bg-gray-50 border-transparent hover:bg-gray-100"}`}
+                    className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${selectedPayer.includes(member.userName) ? "bg-white border-blue-200 shadow-sm" : "bg-transparent border-transparent opacity-60"}`}
                   >
-                    <input
-                      type="checkbox"
-                      checked={selectedPayer.includes(member.userName)}
-                      onChange={() => handleUserToggle(member.userName)}
-                      disabled={member.userName === currentUser}
-                      className="rounded text-blue-600"
-                    />
-                    <span className="text-sm text-gray-600">
-                      {member.userName}
-                    </span>
-                  </label>
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedPayer.includes(member.userName)}
+                        onChange={() => handlePayerToggle(member.userName)}
+                        disabled={member.userName === currentUser}
+                        className="w-4 h-4 rounded text-blue-600"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        {member.userName}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-gray-400">₹</span>
+                      <input
+                        disabled={
+                          !selectedPayer.includes(member.userName) ||
+                          splitPayerEqually
+                        }
+                        placeholder="0"
+                        type="number"
+                        value={payerAmount[member.userName] || ""}
+                        onChange={(e) =>
+                          setPayerAmount((prev) => ({
+                            ...prev,
+                            [member.userName]: e.target.value,
+                          }))
+                        }
+                        className="w-20 text-right bg-transparent border-b border-gray-200 focus:border-blue-500 outline-none text-sm"
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -317,31 +413,29 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         {/* Section 3: Splitting */}
         <section className="space-y-4">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
               Split Between
             </label>
             <button
               type="button"
-              onClick={() => setSplitEqually(!splitEqually)}
-              className="bg-green-200 text-xs text-green-600 font-semibold py-1 cursor-pointer rounded-xl px-4"
+              onClick={() => setSplitDebtorEqually(!splitDebtorEqually)}
+              className={`text-[10px] px-3 py-1 rounded-full font-bold transition-colors ${splitDebtorEqually ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}
             >
-              {splitEqually ? "Splitting Equally" : "Manual Split"}
+              {splitDebtorEqually ? "SPLITTING EQUALLY" : "MANUAL SPLIT"}
             </button>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            <div className="p-3 bg-gray-50 border-b flex justify-between items-center">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  onChange={handleSelectAll}
-                  checked={paidFor.length === members.length}
-                  type="checkbox"
-                  className="rounded"
-                />
-                <span className="text-xs font-bold text-gray-500 uppercase">
-                  Select All Members
-                </span>
-              </label>
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="p-3 bg-gray-50 border-b flex items-center gap-3">
+              <input
+                onChange={handleSelectAll}
+                checked={paidFor.length === members.length}
+                type="checkbox"
+                className="w-4 h-4 rounded text-blue-600"
+              />
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Select All Members
+              </span>
             </div>
 
             <div className="divide-y divide-gray-100">
@@ -362,22 +456,21 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
                     </span>
                   </label>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <span className="text-xs text-gray-400">₹</span>
                     <input
-  
-                    type="number"
+                      type="number"
                       disabled={
-                        splitEqually || !paidFor.includes(member.userName)
+                        splitDebtorEqually || !paidFor.includes(member.userName)
                       }
-                      onChange={(e)=>{
-                         setSplitMoney(prev=>({
+                      onChange={(e) =>
+                        setSplitMoney((prev) => ({
                           ...prev,
-                          [member.userName]:e.target.value,
-                         }));
-                      }}  
-                      value={splitMoney[member.userName] || 0}
-                      className={`w-20 text-right px-2 py-1 border rounded text-sm ₹{!splitEqually && paidFor.includes(member.userName) ? "bg-white border-blue-300" : "bg-gray-100 border-transparent text-gray-400"}`}
+                          [member.userName]: e.target.value,
+                        }))
+                      }
+                      value={splitMoney[member.userName] || ""}
+                      className={`w-20 text-right px-2 py-1 rounded text-sm transition-all border ${!splitDebtorEqually && paidFor.includes(member.userName) ? "bg-white border-gray-200 shadow-sm" : "bg-transparent border-transparent text-gray-400"}`}
                     />
                   </div>
                 </div>
@@ -388,17 +481,17 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       </div>
 
       {/* Footer Actions */}
-      <div className="p-6 bg-white border-t flex gap-3">
+      <div className="p-6 bg-gray-50 border-t flex gap-3">
         <button
           type="button"
           onClick={() => setMakeEntry(false)}
-          className="flex-1 cursor-pointer px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-all"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="flex-[2] cursor-pointer px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md shadow-blue-200 transition-all active:scale-[0.98]"
+          className="flex-[2] px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-100 transition-all active:scale-[0.98]"
         >
           Save Transaction
         </button>

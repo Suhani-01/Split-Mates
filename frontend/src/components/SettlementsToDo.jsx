@@ -152,7 +152,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
           <div className="font-bold text-xs text-gray-400 mb-4">PENDING CONFIRMATIONS</div>
           <div className="flex flex-col mb-4 gap-2">
             {pendingSettlementsConfirmation.map((s) => (
-              <>
+              
                 <div
                   className="bg-white border-2 border-amber-200 border-l-5 border-l-amber-400 rounded-xl p-4 shadow-sm flex gap-3 items-center"
                   key={s._id}
@@ -202,7 +202,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
                     </div>
                   )}
                 </div>
-              </>
+             
             ))}
           </div>
         </>
