@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 
 function MakeEntry({ setMakeEntry, groupDetails }) {
-const { userDetails } = useContext(UserContext);
+  const { userDetails } = useContext(UserContext);
 
   // --- Data Extraction from Props/Context ---
   const members = groupDetails?.members || [];
@@ -16,8 +16,8 @@ const { userDetails } = useContext(UserContext);
 
   // --- Payer Logic State (Who paid the money) ---
   const [isMultiplePayer, setIsMultiplePayer] = useState(false);
-  const [selectedPayer, setSelectedPayer] = useState([currentUser]);
-  const [payerAmount, setPayerAmount] = useState({}); // Stores { userName: amount }
+  const [paidBy, setPaidBy] = useState([currentUser]); //Current user must be one of the Payer
+  const [payerAmount, setPayerAmount] = useState({}); //Stores { userName: amount }
   const [splitPayerEqually, setSplitPayerEqually] = useState(true);
 
   // --- Debtor Logic State (Who the money was paid for) ---
@@ -27,7 +27,7 @@ const { userDetails } = useContext(UserContext);
 
   /**
    * Effect: Reset Form on Group Change
-   * Ensures data from a previous group doesn't leak into a new selection.
+   * Ensures data from a previous group doesn't leak into a other group selection.
    */
   useEffect(() => {
     setTotalAmount("");
@@ -37,30 +37,35 @@ const { userDetails } = useContext(UserContext);
     setSplitMoney({});
     setSplitDebtorEqually(true);
     setIsMultiplePayer(false);
-    setSelectedPayer([currentUser]);
+    setPaidBy([currentUser]);
   }, [groupDetails]);
 
   /**
    * Effect: Calculate Debtor Splits
-   * Automatically recalculates the 'per person' cost whenever the total, 
-   * the list of people involved, or the split mode changes.
+   * Automatically recalculates the 'per person' cost whenever
+   * the total amount, the list of people involved, or the split mode changes for Debtors.
    */
   useEffect(() => {
     const amount = Number(totalAmount);
+
+    // *** There is no total amount
     if (!amount || paidFor.length === 0) {
       setSplitMoney({});
       return;
     }
 
-    const amountPerPerson = amount / paidFor.length;
-    const split = {};
-
+    // *** Split equally Among the Debtor..
     if (splitDebtorEqually) {
+      const amountPerPerson = amount / paidFor.length;
+      const split = {};
+
       paidFor.forEach((member) => {
         split[member] = amountPerPerson;
       });
+
       setSplitMoney(split);
     }
+
     // Manual split logic is handled by user input directly in the state
   }, [totalAmount, paidFor, splitDebtorEqually]);
 
@@ -71,34 +76,40 @@ const { userDetails } = useContext(UserContext);
    */
   useEffect(() => {
     const amount = Number(totalAmount);
+
+    // *** There is no total amount
     if (!amount) {
       setPayerAmount({});
       return;
     }
 
+    //**  Multiple payer or not???
     if (!isMultiplePayer) {
       setPayerAmount({ [currentUser]: amount });
-    } else if (splitPayerEqually && selectedPayer.length > 0) {
-      const perPayer = amount / selectedPayer.length;
+    } else if (splitPayerEqually && paidBy.length > 0) {
+      const perPayer = amount / paidBy.length;
       const newPayerAmount = {};
-      selectedPayer.forEach((name) => {
+
+      paidBy.forEach((name) => {
         newPayerAmount[name] = perPayer;
       });
+
       setPayerAmount(newPayerAmount);
     }
-  }, [totalAmount, selectedPayer, splitPayerEqually, isMultiplePayer]);
+  }, [totalAmount, paidBy, splitPayerEqually, isMultiplePayer]);
 
-  // --- Toggle Handlers ---
-
+  // --- Toggle Payers.... ---
   const handlePayerToggle = (name) => {
-    if (name === currentUser) return; // Prevent removing the self as a potential payer easily in this UI logic
-    if (selectedPayer.includes(name)) {
-      setSelectedPayer(selectedPayer.filter((user) => user !== name));
+    if (name === currentUser) return; // Prevent removing the self as Payer
+
+    if (paidBy.includes(name)) {
+      setPaidBy(paidBy.filter((user) => user !== name));
     } else {
-      setSelectedPayer([...selectedPayer, name]);
+      setPaidBy([...paidBy, name]);
     }
   };
 
+  // ----- Toggle Debtor ------
   const handlePaidForToggle = (name) => {
     if (paidFor.includes(name)) {
       setPaidFor(paidFor.filter((person) => person !== name));
@@ -107,6 +118,7 @@ const { userDetails } = useContext(UserContext);
     }
   };
 
+  //-------- For debtor ---------
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       setPaidFor(members.map((m) => m.userName));
@@ -143,7 +155,7 @@ const { userDetails } = useContext(UserContext);
       let hasError = false;
 
       paidFor.forEach((member) => {
-        const val = splitMoney[member]; 
+        const val = splitMoney[member];
         if (!val) {
           alert(`Missing split for ${member}`);
           hasError = true;
@@ -153,8 +165,11 @@ const { userDetails } = useContext(UserContext);
       });
       if (hasError) return;
 
-      if (Math.abs(totalSumOfAmount - totalAmount) > 0.01) { // Floating point safety
-        alert(`The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`);
+      if (totalSumOfAmount !== totalAmount) {
+        // Floating point safety
+        alert(
+          `The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`,
+        );
         return;
       }
     }
@@ -164,7 +179,7 @@ const { userDetails } = useContext(UserContext);
       let totalSumOfPayer = 0;
       let hasPayerError = false;
 
-      selectedPayer.forEach((payerName) => {
+      paidBy.forEach((payerName) => {
         const amount = Number(payerAmount[payerName]);
         if (!amount || amount <= 0) {
           alert(`Please enter a valid amount for payer : ${payerName}`);
@@ -175,33 +190,33 @@ const { userDetails } = useContext(UserContext);
       });
       if (hasPayerError) return;
 
-      if (Math.abs(totalSumOfPayer - totalAmount) > 0.01) {
-        alert(`The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`);
+      if (totalSumOfPayer !== Number(totalAmount)) {
+        alert(
+          `The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`,
+        );
         return;
       }
     }
 
-    // 4. Data Normalization
+    // 4. Data Setup to send to backend
     // Map usernames back to User IDs and associate with their calculated/input amounts
-    const paidForData = paidFor
-      .map((name) => {
-        const member = members.find((m) => m.userName === name);
-        return {
-          userId: member._id,
-          amount: Number(splitMoney[name]),
-        };
-      })
-      .filter((p) => p.amount > 0);
+    // [{} , {} , {}..........]
 
-    const paidByData = selectedPayer
-      .map((name) => {
-        const member = members.find((m) => m.userName === name);
-        return {
-          userId: member._id,
-          amount: Number(payerAmount[name]) || 0,
-        };
-      })
-      .filter((p) => p.amount > 0);
+    const paidByData = paidBy.map((name) => {
+      const member = members.find((m) => m.userName === name);
+      return {
+        userId: member._id,
+        amount: Number(payerAmount[name]) || 0,
+      };
+    });
+
+    const paidForData = paidFor.map((name) => {
+      const member = members.find((m) => m.userName === name);
+      return {
+        userId: member._id,
+        amount: Number(splitMoney[name]),
+      };
+    });
 
     // 5. Construct Final Payload
     const payload = {
@@ -217,10 +232,11 @@ const { userDetails } = useContext(UserContext);
     // 6. API Call
     try {
       const API = "http://localhost:7000/api/expense/create-expense";
+
       const res = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", 
+        credentials: "include",
         body: JSON.stringify(payload),
       });
 
@@ -245,7 +261,8 @@ const { userDetails } = useContext(UserContext);
       className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
     >
       <div className="flex-1 overflow-y-auto p-6 space-y-8">
-        {/* Section 1: Basic Info */}
+
+        {/* 1. Basic Info: Title and optional description inputs */}
         <section className="space-y-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -274,9 +291,11 @@ const { userDetails } = useContext(UserContext);
           </div>
         </section>
 
-        {/* Section 2: Amount & Payer */}
+        {/* 2. Amount & Payer: Handles total cost and who paid */}
         <section className="space-y-4">
           <div className="flex items-end gap-4">
+
+            {/* 2.1. Main amount input */}
             <div className="flex-1 flex flex-col gap-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
                 Total Amount
@@ -295,6 +314,8 @@ const { userDetails } = useContext(UserContext);
               </div>
             </div>
 
+            {/* 2.2. Paid By... */}
+            {/* Toggle to switch between one person paying or multiple people */}
             <div className="flex items-center gap-2 h-[42px] px-3 bg-blue-50 rounded-lg border border-blue-100">
               <input
                 type="checkbox"
@@ -302,7 +323,7 @@ const { userDetails } = useContext(UserContext);
                 checked={isMultiplePayer}
                 onChange={() => {
                   setIsMultiplePayer(!isMultiplePayer);
-                  setSelectedPayer([currentUser]);
+                  setPaidBy([currentUser]); // Reset to default user if toggled 
                 }}
                 className="w-4 h-4 text-blue-600 rounded cursor-pointer"
               />
@@ -315,11 +336,13 @@ const { userDetails } = useContext(UserContext);
             </div>
           </div>
 
+          {/* Payer selection area */}
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
             <div className="flex justify-between items-center">
               <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
                 Paid By
               </label>
+              {/* Button to choose between automatic equal split or manual amounts */}
               {isMultiplePayer && (
                 <button
                   type="button"
@@ -331,6 +354,7 @@ const { userDetails } = useContext(UserContext);
               )}
             </div>
 
+            {/* Single Payer View vs Multi Payer List */}
             {!isMultiplePayer ? (
               <div className="flex items-center gap-3 text-sm text-gray-700 font-medium bg-white p-2.5 rounded-lg border border-gray-100">
                 <div className="w-7 h-7 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">
@@ -343,12 +367,12 @@ const { userDetails } = useContext(UserContext);
                 {members.map((member) => (
                   <div
                     key={member._id}
-                    className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${selectedPayer.includes(member.userName) ? "bg-white border-blue-200 shadow-sm" : "bg-transparent border-transparent opacity-60"}`}
+                    className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${paidBy.includes(member.userName) ? "bg-white border-blue-200 shadow-sm" : "bg-transparent border-transparent opacity-60"}`}
                   >
                     <div className="flex gap-3 items-center">
                       <input
                         type="checkbox"
-                        checked={selectedPayer.includes(member.userName)}
+                        checked={paidBy.includes(member.userName)}
                         onChange={() => handlePayerToggle(member.userName)}
                         disabled={member.userName === currentUser}
                         className="w-4 h-4 rounded text-blue-600"
@@ -361,8 +385,7 @@ const { userDetails } = useContext(UserContext);
                       <span className="text-xs text-gray-400">₹</span>
                       <input
                         disabled={
-                          !selectedPayer.includes(member.userName) ||
-                          splitPayerEqually
+                          !paidBy.includes(member.userName) || splitPayerEqually
                         }
                         placeholder="0"
                         type="number"
@@ -383,7 +406,7 @@ const { userDetails } = useContext(UserContext);
           </div>
         </section>
 
-        {/* Section 3: Splitting */}
+        {/* 3. Splitting: Defines who the bill is being shared with */}
         <section className="space-y-4">
           <div className="flex justify-between items-center">
             <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -399,6 +422,7 @@ const { userDetails } = useContext(UserContext);
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            {/* Bulk select checkbox for all group members */}
             <div className="p-3 bg-gray-50 border-b flex items-center gap-3">
               <input
                 onChange={handleSelectAll}
@@ -411,6 +435,7 @@ const { userDetails } = useContext(UserContext);
               </span>
             </div>
 
+            {/* List of debtors with conditional amount inputs */}
             <div className="divide-y divide-gray-100">
               {members.map((member) => (
                 <div
@@ -453,12 +478,12 @@ const { userDetails } = useContext(UserContext);
         </section>
       </div>
 
-      {/* Footer Actions */}
+      {/* Footer Actions: Cancel or Save entry */}
       <div className="p-6 bg-gray-50 border-t flex gap-3">
         <button
           type="button"
           onClick={() => setMakeEntry(false)}
-          className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-all"
+          className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-100 transition-all"
         >
           Cancel
         </button>
