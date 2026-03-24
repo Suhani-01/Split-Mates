@@ -2,43 +2,34 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../App";
 
 function MakeEntry({ setMakeEntry, groupDetails }) {
-  const { userDetails } = useContext(UserContext);
+const { userDetails } = useContext(UserContext);
 
-  // console.log(userDetails);
-  // console.log(groupDetails)
-
-  //this include each member username and its _id
+  // --- Data Extraction from Props/Context ---
   const members = groupDetails?.members || [];
-
   const currentUser = userDetails.userName || "";
   const currentUserId = userDetails._id || "";
 
-  //Title and description of the payment
+  // --- Form State ---
   const [titleOfPayment, setTitleOfPayment] = useState("");
   const [description, setDescription] = useState("");
-
-  //Multiple Payer?? or just a Single payer
-  const [isMultiplePayer, setIsMultiplePayer] = useState(false);
-
-  //Splitting Eqally Among Selected Users???
-  const [splitDebtorEqually, setSplitDebtorEqually] = useState(true);
-
-  //Total Amount
   const [totalAmount, setTotalAmount] = useState("");
 
-  //Who are paying the cost //CREDITOR
+  // --- Payer Logic State (Who paid the money) ---
+  const [isMultiplePayer, setIsMultiplePayer] = useState(false);
   const [selectedPayer, setSelectedPayer] = useState([currentUser]);
-  // payer->amount
-  const [payerAmount, setPayerAmount] = useState({});
+  const [payerAmount, setPayerAmount] = useState({}); // Stores { userName: amount }
   const [splitPayerEqually, setSplitPayerEqually] = useState(true);
 
-  //For who we are paying //DEBTOR
-  const [paidFor, setPaidFor] = useState([]);
-  //Member -> Amount
-  const [splitMoney, setSplitMoney] = useState({});
+  // --- Debtor Logic State (Who the money was paid for) ---
+  const [paidFor, setPaidFor] = useState([]); // Array of usernames
+  const [splitMoney, setSplitMoney] = useState({}); // Stores { userName: amount }
+  const [splitDebtorEqually, setSplitDebtorEqually] = useState(true);
 
+  /**
+   * Effect: Reset Form on Group Change
+   * Ensures data from a previous group doesn't leak into a new selection.
+   */
   useEffect(() => {
-    // reset everything for new group
     setTotalAmount("");
     setTitleOfPayment("");
     setDescription("");
@@ -49,32 +40,37 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     setSelectedPayer([currentUser]);
   }, [groupDetails]);
 
-  // splitting money between debtor
+  /**
+   * Effect: Calculate Debtor Splits
+   * Automatically recalculates the 'per person' cost whenever the total, 
+   * the list of people involved, or the split mode changes.
+   */
   useEffect(() => {
     const amount = Number(totalAmount);
-
     if (!amount || paidFor.length === 0) {
       setSplitMoney({});
       return;
     }
 
     const amountPerPerson = amount / paidFor.length;
-
     const split = {};
 
     if (splitDebtorEqually) {
       paidFor.forEach((member) => {
         split[member] = amountPerPerson;
       });
+      setSplitMoney(split);
     }
-
-    setSplitMoney(split);
+    // Manual split logic is handled by user input directly in the state
   }, [totalAmount, paidFor, splitDebtorEqually]);
 
-  //for splitting the total amount between the payers
+  /**
+   * Effect: Calculate Payer Splits
+   * Manages how the 'Paid By' section behaves. If single payer, 100% goes to currentUser.
+   * If multiple, it distributes the total among selected payers.
+   */
   useEffect(() => {
     const amount = Number(totalAmount);
-
     if (!amount) {
       setPayerAmount({});
       return;
@@ -84,9 +80,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       setPayerAmount({ [currentUser]: amount });
     } else if (splitPayerEqually && selectedPayer.length > 0) {
       const perPayer = amount / selectedPayer.length;
-
       const newPayerAmount = {};
-
       selectedPayer.forEach((name) => {
         newPayerAmount[name] = perPayer;
       });
@@ -94,10 +88,10 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     }
   }, [totalAmount, selectedPayer, splitPayerEqually, isMultiplePayer]);
 
-  // payer toggle
-  const handlePayerToggle = (name) => {
-    if (name === currentUser) return;
+  // --- Toggle Handlers ---
 
+  const handlePayerToggle = (name) => {
+    if (name === currentUser) return; // Prevent removing the self as a potential payer easily in this UI logic
     if (selectedPayer.includes(name)) {
       setSelectedPayer(selectedPayer.filter((user) => user !== name));
     } else {
@@ -105,7 +99,6 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     }
   };
 
-  // toggle paidFor
   const handlePaidForToggle = (name) => {
     if (paidFor.includes(name)) {
       setPaidFor(paidFor.filter((person) => person !== name));
@@ -114,7 +107,6 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     }
   };
 
-  // select all
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       setPaidFor(members.map((m) => m.userName));
@@ -123,15 +115,19 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
     }
   };
 
-  //add the payment in the db *********************
+  /**
+   * Submission Handler
+   * Validates manual split sums, normalizes the data into (userId, amount) objects,
+   * and POSTs to the backend.
+   */
   async function addPayment(e) {
     e.preventDefault();
 
+    // 1. Basic Validation
     if (paidFor.length === 0) {
       alert("Select the people you are paying for");
       return;
     }
-
     if (!totalAmount) {
       alert("Enter a valid amount");
       return;
@@ -141,37 +137,36 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       return;
     }
 
-    //check if in case of manual split the sum of money is equal to total Amount
+    // 2. Manual Split Validation (Debtors)
     if (!splitDebtorEqually) {
       let totalSumOfAmount = 0;
       let hasError = false;
 
-      paidFor.forEach((member, i, arr) => {
-        if (!arr[member]) {
+      paidFor.forEach((member) => {
+        const val = splitMoney[member]; 
+        if (!val) {
           alert(`Missing split for ${member}`);
           hasError = true;
           return;
         }
-        totalSumOfAmount += Number(arr[member]);
+        totalSumOfAmount += Number(val);
       });
       if (hasError) return;
 
-      if (totalSumOfAmount != totalAmount) {
-        alert(
-          `The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`,
-        );
+      if (Math.abs(totalSumOfAmount - totalAmount) > 0.01) { // Floating point safety
+        alert(`The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`);
         return;
       }
     }
 
+    // 3. Manual Split Validation (Payers)
     if (isMultiplePayer && !splitPayerEqually) {
       let totalSumOfPayer = 0;
       let hasPayerError = false;
 
       selectedPayer.forEach((payerName) => {
         const amount = Number(payerAmount[payerName]);
-
-        if (!amount || Number(amount) <= 0) {
+        if (!amount || amount <= 0) {
           alert(`Please enter a valid amount for payer : ${payerName}`);
           hasPayerError = true;
           return;
@@ -180,58 +175,35 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       });
       if (hasPayerError) return;
 
-      if (totalSumOfPayer != totalAmount) {
-        alert(
-          `The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`,
-        );
+      if (Math.abs(totalSumOfPayer - totalAmount) > 0.01) {
+        alert(`The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`);
         return;
       }
     }
 
-    //paid for data
-    // [ {userId:'............. , amount : 920} ]
+    // 4. Data Normalization
+    // Map usernames back to User IDs and associate with their calculated/input amounts
     const paidForData = paidFor
       .map((name) => {
         const member = members.find((m) => m.userName === name);
-
         return {
           userId: member._id,
-          amount: splitMoney[name],
+          amount: Number(splitMoney[name]),
         };
       })
       .filter((p) => p.amount > 0);
 
-    //paid by
-    // const paidByData=selectedPayer.map((name)=>{
-    //   const member=members.find((m)=> m.userName===name);
-
-    //   return {
-    //     userId:member._id,
-    //     amount:payerAmount[name] || 0,
-    //   }
-    // })
-
-    //abhi bhs ek payer haiii baad me multiple kr denge
-
-    // const paidByData = [
-    //   {
-    //     userId: currentUserId,
-    //     amount: Number(totalAmount),
-    //   },
-    // ];
-
     const paidByData = selectedPayer
       .map((name) => {
         const member = members.find((m) => m.userName === name);
-
         return {
           userId: member._id,
           amount: Number(payerAmount[name]) || 0,
         };
       })
-      .filter((p) => p.amount > 0); //send only the one whose payment is greater than 0
+      .filter((p) => p.amount > 0);
 
-    //the datat we will send to the backend
+    // 5. Construct Final Payload
     const payload = {
       groupId: groupDetails._id,
       title: titleOfPayment,
@@ -241,29 +213,30 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       paidFor: paidForData,
       createdBy: currentUserId,
     };
-    console.log(payload);
 
-    const API = "http://localhost:7000/api/expense/create-expense";
+    // 6. API Call
+    try {
+      const API = "http://localhost:7000/api/expense/create-expense";
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", 
+        body: JSON.stringify(payload),
+      });
 
-    const res = await fetch(API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // send cookie automatically cross origin ke case me bhejna pdta hai same me hota tho nahi bhejna pdta browser automatically bhej deta
-      body: JSON.stringify(payload),
-    });
+      const data = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Something went wrong");
+        return;
+      }
 
-    if (!res.ok) {
-      alert(data.message || "Something went wrong");
-
-      return;
+      alert("Expense added");
+      setMakeEntry(false);
+    } catch (err) {
+      console.error("Failed to add expense:", err);
+      alert("Network error. Please try again.");
     }
-
-    alert("Expense added");
-    setMakeEntry(false);
   }
 
   return (
