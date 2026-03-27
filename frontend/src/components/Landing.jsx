@@ -4,8 +4,10 @@ import { UserContext } from "../App";
 import groupChat from "../assets/group.mp4";
 
 function Landing() {
+  // Get login status from context
   const { isLoggedIn } = useContext(UserContext);
 
+  // Content for "How it works" section
   const steps = [
     {
       id: 2,
@@ -27,6 +29,7 @@ function Landing() {
     },
   ];
 
+  // Content for Features section
   const features = [
     {
       id: 10,
@@ -48,18 +51,19 @@ function Landing() {
     },
   ];
 
+  // Redirect to dashboard if user is already logged in
   if (isLoggedIn) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard"/>;
   }
 
   return (
     <div className="min-h-screen">
       
-      {/* Hero Section */}
+      {/* Hero: Main title, intro text, and action buttons */}
       <section className="py-12 px-4 md:px-8 bg-gray-900 text-white">
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-10 items-center text-center md:text-left">
           
-          {/* Text */}
+          {/* Left side: Heading and Buttons */}
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6">
               Split<span className="text-cyan-400">Mates</span> 💸
@@ -85,7 +89,7 @@ function Landing() {
             </div>
           </div>
 
-          {/* Image */}
+          {/* Right side: App preview video */}
           <div className="flex justify-center">
             <video
             autoPlay loop muted playsInline
@@ -96,7 +100,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* Steps: Loop through the steps array */}
       <section className="py-12 px-4 bg-white">
         <div className="max-w-[1200px] mx-auto text-center">
           <h2 className="font-bold text-blue-400">HOW IT WORKS</h2>
@@ -121,7 +125,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features: Loop through the features array */}
       <section className="py-16 bg-gray-100 px-4">
         <div className="max-w-[1100px] mx-auto">
           <h2 className="font-bold text-center text-blue-400">FEATURES</h2>
@@ -150,7 +154,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA: Final call to action button */}
       <section className="bg-cyan-400 py-12 px-4 text-center">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-6 text-black">
           Ready to simplify your group expenses?

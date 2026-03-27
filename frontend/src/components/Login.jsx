@@ -2,47 +2,41 @@ import React, { useContext, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router';
 import { UserContext } from '../App';
 
-
 function Login() {
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+  // Context functions to update global login state and user info
   const {setIsLoggedIn}=useContext(UserContext);
   const {setUserDetails}=useContext(UserContext);
 
-  //creating context for logged in user info.....
-
   const navigate = useNavigate();
 
+  /**
+   * Sends login credentials to backend and handles redirection
+   */
   const handleSubmit = async(e) => {
     e.preventDefault();
-
-    
 
     try{
       const response=await fetch("http://localhost:7000/api/user/login",{
         method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-        },
-        credentials:"include",//ensures that browser send and recieve cookies
-        body:JSON.stringify({
-          email,
-          password,
-        })
+        headers:{ "Content-Type":"application/json" },
+        // credentials: "include" -> Bhejta/recive karta hai cookies (CORS setup)
+        credentials:"include",
+        body:JSON.stringify({ email, password })
       });
 
       const data=await response.json();
 
       if(response.ok){
         alert(data.message);
-        console.log(data);
-
-
+        
+        // Update global state with user data
         setIsLoggedIn(true);
-        setUserDetails(data);//storing the logged in user details ie email and username
-        console.log("i am from login ",data)
+        setUserDetails(data); 
 
+        // Navigate to Dashboard after successful login
         navigate("/dashboard");
       }else{
         alert(data.message || "something went wrong");
@@ -50,8 +44,6 @@ function Login() {
     }catch(err){
       console.log("Error:",err);
     }
-
-    // Later you can connect backend here
   };
 
   return (
@@ -62,9 +54,10 @@ function Login() {
           Welcome Back 👋
         </h2>
 
+        {/* Login Form Section */}
         <form onSubmit={handleSubmit} className="space-y-5">
 
-          {/* Email */}
+          {/* Email Input */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Email
@@ -79,7 +72,7 @@ function Login() {
             />
           </div>
 
-          {/* Password */}
+          {/* Password Input */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Password
@@ -94,7 +87,6 @@ function Login() {
             />
           </div>
 
-          {/* Login Button */}
           <button 
             type="submit"
             className="w-full cursor-pointer bg-cyan-400 text-black py-2 rounded-lg font-semibold hover:bg-cyan-300 transition"
@@ -104,7 +96,7 @@ function Login() {
 
         </form>
 
-        {/* Extra Text */}
+        {/* Navigation to Signup */}
         <p className="text-sm text-center text-gray-500 mt-4">
           Don’t have an account? <NavLink to='/signup' className="text-cyan-500 cursor-pointer">Sign up</NavLink>
         </p>

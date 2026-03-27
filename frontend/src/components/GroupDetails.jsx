@@ -1,7 +1,11 @@
 import React, { useContext } from "react";
 import { UserContext } from "../App";
 
+// This component displays the group's description and a list of all members and shows who Is the Admin
+// group info
 function GroupDetails({ groupDetails }) {
+
+  // ------- Logged In User Details to replace his/her username with You ------------
   const { userDetails } = useContext(UserContext);
 
   return (
