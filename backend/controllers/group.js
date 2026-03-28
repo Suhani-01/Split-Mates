@@ -2,22 +2,23 @@ import Activity from "../models/activity.js";
 import Group from "../models/group.js";
 import User from "../models/user.js"
 
+// CREATE NEW GROUP
 async function createGroup(req,res){
     try{
         const {groupName,description,members}=req.body;
 
-        //validate group name
+        // Validate group name
         if(!groupName){
             return res.status(400).json({message:"Group name is required"});
 
         }
 
-        //validate members array
+        // Validate members array
         if(!Array.isArray(members) || members.length===0){
             return res.status(400).json({message:"Add at least one member"});
         }
 
-        //member username will help to find there id to store the reference in the group db all distict id
+        // Username will help to find there id to store the reference in the group DB
         const memberUsers=await User.find({userName :{$in:members}}).distinct("_id");
 
 
@@ -25,18 +26,16 @@ async function createGroup(req,res){
             return res.status(400).json({message:"Some members do not exist"});
         }
 
-        //set the current user as the admin by default
+        // Set the Current User as the admin by default
         const currentUserId=req.user._id;
 
-        //create group document
-        const group=new Group({
+        // Create NEW group document
+        const group = await Group.create({
             groupName,
-            description:description||"",
-            admin:currentUserId,
-            members:[...memberUsers,currentUserId]
+            description: description || "",
+            admin: currentUserId,
+            members: [...memberUsers, currentUserId]
         });
-
-        await group.save();
 
         return res.status(201).json({message:"Group created sucessfully"});
     }catch(err){
@@ -44,12 +43,14 @@ async function createGroup(req,res){
     }
 }
 
-//to find all the groups the logged in user currently in
+// ALL the GROUPS of LOGGED IN USER....
 async function getUserGroups(req,res){
     try{
         const userId=req.user._id;
 
+        //Array of Objects
         const groups=await Group.find({members:userId}).select("_id groupName updatedAt");
+        
         // console.log(groups)
         res.status(200).json(groups);
     }catch(error){
@@ -59,6 +60,8 @@ async function getUserGroups(req,res){
     }
 }
 
+
+// Return selected group entire details that are present in Group DB
 async function getGroupDetail(req,res){
     try{
         const groupId=req.params.groupId;
@@ -79,7 +82,8 @@ async function getGroupDetail(req,res){
         // populating id of users and admin along with there username........
         await groupDetails.populate("members","userName");
         await groupDetails.populate("admin","userName");
-        
+
+
         return res.status(200).json(groupDetails);
 
     }catch(err){
@@ -88,7 +92,7 @@ async function getGroupDetail(req,res){
     }
 }
 
-//to fetch the activites taking place in the group
+// get PAST ACTIVITES OF THE GROUP
 async function getActivities(req,res){
     try{
         const {groupId}=req.params;
