@@ -10,19 +10,19 @@ function Landing() {
   // Content for "How it works" section
   const steps = [
     {
-      id: 2,
+      id: 1,
       emoji: "📋",
       title: "Add Expenses",
       desc: "Enter the total and select which participants to include in the split.",
     },
     {
-      id: 3,
+      id: 2,
       emoji: "⚖️",
       title: "Split Fairly",
       desc: "Choose equal or custom manual splits — SplitMates handles the math.",
     },
     {
-      id: 4,
+      id: 3,
       emoji: "✅",
       title: "Settle Up",
       desc: "See exactly who owes whom and pay easily with one tap.",
