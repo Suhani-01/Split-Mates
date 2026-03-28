@@ -5,19 +5,19 @@ import { calculateGroupSettlements } from "../controllers/calculation.js";
 const router=Router();
 
 
-//to create group the api is api/group/create-group
+// CREATE NEW GROUP ( api/group/create-group )
 router.post('/create-group',createGroup);
 
-//to get the groups of current user
+// get ALL GROUPS OF LOGGED IN USER
 router.get('/my-groups',getUserGroups);
 
-//to open a group we need to send group details to the user....
+// Details of Selected Group
 router.get('/my-groups/:groupId',getGroupDetail);
 
-//to calculate the remaining settlements the user should do...
+// Calculate the REMAINING SETTLEMENTS the user should do in SELECTED GROUP...
 router.get('/my-group/settle/:groupId',calculateGroupSettlements);
 
-//to get group activites
+// SELECTED GROUP ACTIVITES
 router.get('/activites/:groupId',getActivities);
 
 
