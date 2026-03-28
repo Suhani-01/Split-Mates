@@ -39,7 +39,7 @@ mongoose.connect(URL).then(()=>console.log("MongoDB connected")).catch((err)=>co
 // Routes to handles user Signup and Login
 app.use('/api/user',UserRouter);
 
-//Routes for the access of data in the dashboard
+//Route to search User to add him/her in the Group
 app.use('/api/private',restrictToLoggedInUserOnly,PrivateRouter);
 
 // Route to create group
