@@ -3,18 +3,17 @@ import { checkAuth, handleAddNewUser, handleLoginUser, logOutUser } from "../con
 
 const router=Router();
 
-//post request on api/user/ to add new user
+// POST request on api/user/ to CREATE NEW USER
 router.post('/signup',handleAddNewUser);
 
-// login the user
+// POST request to LOG IN USER
 router.post('/login',handleLoginUser);
 
-//to check if user is logged in or not
+// GET req to check if user is already LOGGED IN
 router.get('/check-auth',checkAuth);
 
-//to logout the user
+// POST req to LOGOUT
 router.post('/logout',logOutUser)
-
 
 
 export default router;
