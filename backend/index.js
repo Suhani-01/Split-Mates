@@ -36,17 +36,17 @@ app.use(express.json());
 const URL=process.env.MONGO_URI; //Database connection using environment variable
 mongoose.connect(URL).then(()=>console.log("MongoDB connected")).catch((err)=>console.log("Mongo Error",err));
 
-// Routes to handles user Signup and Login
+// Handles user Signup and Login
 app.use('/api/user',UserRouter);
 
-//Route to search User to add him/her in the Group
+// Route to SEARCH USER to add him/her in the Group
 app.use('/api/private',restrictToLoggedInUserOnly,PrivateRouter);
 
-// Route to create group
-// middleware will automatifally add the current user email and _id
+// Route to CREATE GROUP
+// Middleware will automatifally add the current user email and _id
 app.use('/api/group',restrictToLoggedInUserOnly,GroupRouter);
 
-// Routes to add expenses
+// Route to add expenses in the GROUP
 app.use('/api/expense/',restrictToLoggedInUserOnly,ExpenseRouter)
 
 const PORT=7000;
