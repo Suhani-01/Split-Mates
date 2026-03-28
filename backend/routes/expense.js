@@ -3,18 +3,15 @@ import { changeSettlementEntry, createExpense,doSettlement } from "../controller
 
 const router=Router();
 
-
+// CREATE NEW EXPENSE IN THE GROUP
 //api/expense/create-expense
 router.post('/create-expense',createExpense);
 
-
-//this is meant to do settlements
+// TO DO SETTLEMENT
 //api/expense/settlement
 router.post('/settlement',doSettlement);
 
-//to do modification in settlement
+// To CONFIRM or REJECT (delete) the Settlement
 router.post('/modify-settlement',changeSettlementEntry);
-
-
 
 export default router;

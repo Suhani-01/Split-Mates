@@ -42,11 +42,11 @@ app.use('/api/user',UserRouter);
 // Route to SEARCH USER to add him/her in the Group
 app.use('/api/private',restrictToLoggedInUserOnly,PrivateRouter);
 
-// Route to CREATE GROUP
+// Routes related to GROUPS
 // Middleware will automatifally add the current user email and _id
 app.use('/api/group',restrictToLoggedInUserOnly,GroupRouter);
 
-// Route to add expenses in the GROUP
+// Route related to expense and to do settlements in the GROUP
 app.use('/api/expense/',restrictToLoggedInUserOnly,ExpenseRouter)
 
 const PORT=7000;

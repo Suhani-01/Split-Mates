@@ -2,10 +2,10 @@ import Activity from "../models/activity.js";
 import Expense from "../models/expense.js";
 import Settlement from "../models/settlement.js";
 
+// CREATE NEW EXPENSE IN THE GROUP
 async function createExpense(req, res) {
   try {
     const expense = await Expense.create(req.body);
-    console.log(req.body);
 
     //preparing activity log...
     const activityData = {
@@ -23,6 +23,7 @@ async function createExpense(req, res) {
     res.status(201).json({
       message: "Expense added successfully",
     });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -31,8 +32,10 @@ async function createExpense(req, res) {
   }
 }
 
+// SETTLEMENT IS DONE BY THE PAYER
 async function doSettlement(req, res) {
   try {
+    // By default settlement is marked as "PENDING"
     const settlement = await Settlement.create(req.body);
 
     const { groupId, paidBy, paidTo, amount } = req.body;
@@ -59,6 +62,7 @@ async function doSettlement(req, res) {
   }
 }
 
+// RECIEVER OF THE SETTLEMENT CONFIRM or REJECT ( use paise mile ki nahi )
 async function changeSettlementEntry(req, res) {
   try {
     const { entryId, action } = req.body;
@@ -68,7 +72,7 @@ async function changeSettlementEntry(req, res) {
       return res.status(404).json({ message: "Entry not found" });
     }
 
-    // activity object
+    // ACTIVITY OBJECT 
     const activityData = {
       groupId: settlement.groupId,
       performedBy:[settlement.paidTo] , 
@@ -77,10 +81,11 @@ async function changeSettlementEntry(req, res) {
     };
 
     if (action === "fulfill") {
+      // mark settlement as FULFILLED
       settlement.status="fulfilled";
       await settlement.save();
 
-      //Activity log
+      //ACTIVITY LOG ADD...
       activityData.type="PAYMENT_CONFIRMED";
       await Activity.create(activityData);
 
@@ -89,6 +94,7 @@ async function changeSettlementEntry(req, res) {
       });
     }
 
+    // DELETE THE SETTLEMENT AS RECIEVER DID NOT RECIEVED ANY MONEY
     if (action === "delete") {
       await Settlement.findByIdAndDelete(entryId);
 
@@ -101,16 +107,18 @@ async function changeSettlementEntry(req, res) {
       });
     }
 
-    //if the operation is wrong.....
+    // FRONT END IS DEMANDING FOR INVALID OPERATION ( valid : fulfill / delete )
     return res.status(400).json({
       message: "Invalid action",
     });
 
   } catch (err) {
+
     console.log(err);
     res.status(500).json({
       message: "Server Issue....🙂",
     });
+    
   }
 }
 
