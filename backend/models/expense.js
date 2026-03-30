@@ -1,33 +1,34 @@
 import mongoose from "mongoose";
 
 const expenseSchema = new mongoose.Schema({
-  //group to which the expenses belong to will point to the group....
+  
+  // -- Group to which Expense Belongs --
   groupId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Group",
     required: true,
   },
 
-  //Title of the expense
+  // -- Title Of Expense--
   title: {
     type: String,
     required: true,
     trim: true,
   },
 
-  //Optional description
+  // -- Optional Description --
   description: {
     type: String,
     default: "",
   },
 
-  //Total expense amount
+  // -- Total Expense Amount --
   totalAmount: {
     type: Number,
     required: true,
   },
 
-  //who paid and how much [ { userId, amount } , { userId, amount } ]
+  // -- Who Paid & How Much [ { userId, amount } , { userId, amount } ] --
   paidBy: [
     {
       userId: {
@@ -44,7 +45,7 @@ const expenseSchema = new mongoose.Schema({
     }
   ],
 
-  // for whom the payment has been done .... 
+  // -- For Whom and How Much --
   paidFor:[
     {
         userId:{
@@ -60,7 +61,7 @@ const expenseSchema = new mongoose.Schema({
     }
   ],
 
-  //who added this expense???
+  // -- Who Created this Expense --
   createdBy:{
     type:mongoose.Schema.Types.ObjectId,
     ref:"User",
@@ -72,7 +73,7 @@ const expenseSchema = new mongoose.Schema({
     timestamps:true
 });
 
-//creating model from the schema of name expenses collection
+// creating model from the schema of name expenses collection
 const Expense = mongoose.model("Expense", expenseSchema);
 
 export default Expense;

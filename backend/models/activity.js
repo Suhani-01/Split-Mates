@@ -1,11 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
 const activitySchema=new Schema({
+
+    // -- Group to which activity Belong to --
     groupId:{
         type:Schema.Types.ObjectId,
         ref:'Group',
         required:true,
     },
+
+    // -- Activity Type --
     type:{
         type:String,
         enum:[
@@ -16,6 +20,8 @@ const activitySchema=new Schema({
         ],
         required:true,
     },
+    
+    // -- Who Performed the Activity --
     performedBy:[
         {
             type: Schema.Types.ObjectId, // reference to User
@@ -24,6 +30,7 @@ const activitySchema=new Schema({
         }
     ],
 
+    // -- For whom the Activity is Performed --
     performedFor:[
         {
             type:Schema.Types.ObjectId,
@@ -32,14 +39,18 @@ const activitySchema=new Schema({
         }
     ],
 
+    // -- Amount Involved in Activity --
     amount:{
         type:Number,
     },
-    // title of expense ie Icecream , Restraunt
+    
+    // -- Title in case of new Expense --
     title:{
         type:String,
         default:"",
     },
+
+    // -- Timing of Activity --
     timestamp:{
         type:Date,
         default:Date.now,

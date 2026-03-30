@@ -2,32 +2,36 @@ import mongoose from "mongoose";
 
 const settlementSchema = new mongoose.Schema(
   {
-    //which group this settlement belong to....
+    // -- Group to which Settlement Belongs --
     groupId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Group",
       required: true
     },
 
-    //who paid 
+    // -- Who Did the Settlement --
     paidBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
     },
 
-    //to whom
+    // -- To Whom --
     paidTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
     },
 
-    //how much
+    // -- How Much Settlement --
     amount: {
       type: Number,
       required: true
     },
+    
+    // -- Current Status of Settlement --
+    // pending -> A paid to B and waiting for B's confirmation
+    //fulfilled -> B confirmed recieving payment from A
     status:{
       type:String,
       enum:["pending","fulfilled"],
