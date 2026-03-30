@@ -4,9 +4,8 @@ import Settlement from "../models/settlement.js";
 async function calculateGroupSettlements(req, res) {
   try {
     const groupId = req.params.groupId;
-    console.log(req.user);
-
-    //fetching the expenses of required group
+    
+    //fetching all the past expenses of required group
     const groupExpenses = await Expense.find({ groupId });
 
     // building the balance hashmap
@@ -16,35 +15,41 @@ async function calculateGroupSettlements(req, res) {
     // balance[D] = -100
 
     const balance = {};
+    
 
     groupExpenses.forEach((exp) => {
-      //paidBy**************
+      
+      // ----------- PAID BY ----------- 
       exp.paidBy.forEach((payer) => {
-        //fetcing the user id who paid
-        const id = payer.userId.toString();
+        const id = payer.userId.toString(); //User Id of Payer
 
         if (!balance[id]) balance[id] = 0;
 
         balance[id] += payer.amount;
       });
 
-      //paidFor***************
+      // ------------ PAID FOR ------------
       exp.paidFor.forEach((member) => {
-        const id = member.userId.toString();
+        const id = member.userId.toString(); //User Id 
 
         if (!balance[id]) balance[id] = 0;
 
         balance[id] -= member.amount;
       });
+
+
     });
 
-    //code to also include settlements that are made till now...
+    // SETTLEMENTS MADE TILL NOW IN THE GROUP
     const settlementsOfGroup = await Settlement.find({ groupId });
 
-    //pending settlements .... A paid B but B ne abhi tk confirm nahi kra ki he/she recieved the payment
+    // LOGGED IN USER 
     const currentUserId = req.user._id.toString();
 
-    //pedning settlements of the settlmnt db
+    // SETTLEMENTS THAT ARE NOT CONFIRMED BY THE RECIEVER ("pending")
+    // Either payer is the logged in user or the reciever is the logged in user
+
+    // SETTLEMENTS THAT ARE WAITING FOR CONFIRMATION
     const pendingSettlementsOfGroup = settlementsOfGroup.filter(
       (st) =>
         st.status === "pending" &&
@@ -52,49 +57,50 @@ async function calculateGroupSettlements(req, res) {
           st.paidTo.toString() === currentUserId),
     );
 
-    //will use only fulfilled Settlements of the group to do the calculations
-    //Update: Added status check to include both fulfilled and pending in calculations
+
+
     settlementsOfGroup.forEach((st) => {
-      if (st.status === "fulfilled" || st.status === "pending") {
-        //paid by
-        const paidBy = st.paidBy.toString();
-        const paidTo = st.paidTo.toString();
-        const amount = st.amount;
+    
+      const paidBy = st.paidBy.toString();
+      const paidTo = st.paidTo.toString();
+      const amount = st.amount;
 
-        if (!balance[paidBy]) balance[paidBy] = 0;
-        if (!balance[paidTo]) balance[paidTo] = 0; // Fixed: Typo balance[paidFor] to balance[paidTo]
+      if (!balance[paidBy]) balance[paidBy] = 0;
+      if (!balance[paidTo]) balance[paidTo] = 0; 
 
-        balance[paidBy] += amount;
-        balance[paidTo] -= amount;
-      }
+      balance[paidBy] += amount;
+      balance[paidTo] -= amount;
+      
     });
 
-    // lets create creditors and debtors array
+    // CREATE CREDITOR AND DEBTOR ARRAY
     // [ { user:A , amount:300 } , { user:B , amount:100 } ] ....
     const creditors = [];
     const debtors = [];
 
     for (let user in balance) {
-      // Small epsilon check (0.01) to handle JS floating point issues
-      if (balance[user] > 0.01) {
+
+      if (balance[user] > 0) {
         creditors.push({ user, amount: balance[user] });
       }
 
-      if (balance[user] < -0.01) {
+      if (balance[user] < 0) {
         debtors.push({ user, amount: -balance[user] });
       }
+
     }
 
-    //sum of creditors and sum of debtors amount will always be equal...
-    //using greedy approach to allocate the amnt to be paid by whom to whom
-
+    // SUM OF CREDITOR AMOUNT  == SUM OF DEBTOR AMOUNT
+    // ALLOCATE WHO HAD TO PAY TO WHO
+    
+    // WILL TACKLE LARGE AMOUNT FIRST
     creditors.sort((a, b) => b.amount - a.amount);
     debtors.sort((a, b) => b.amount - a.amount);
 
-    let i = 0; //creditor pointer
-    let j = 0; //debtor pointer
+    let i = 0; // creditor pointer
+    let j = 0; // debtor pointer
 
-    //  settlements=[
+    // settlementsToDo = [
     //  { from: "B", to: "A", amount: 100 },
     //  { from: "C", to: "A", amount: 100 },
     //  { from: "D", to: "A", amount: 100 }
@@ -102,11 +108,12 @@ async function calculateGroupSettlements(req, res) {
 
     const settlementsToDo = [];
 
+    // ------------- GREEDY ---------------
     while (i < creditors.length && j < debtors.length) {
       let creditor = creditors[i];
       let debtor = debtors[j];
 
-      //min amnt amont creditor adn debtor to settle
+      // MAX AMOUNT THAT WE CAN SETTLE
       let settleAmount = Math.min(creditor.amount, debtor.amount);
 
       settlementsToDo.push({
@@ -118,8 +125,8 @@ async function calculateGroupSettlements(req, res) {
       creditor.amount -= settleAmount;
       debtor.amount -= settleAmount;
 
-      if (creditor.amount <= 0.01) i++;
-      if (debtor.amount <= 0.01) j++;
+      if (creditor.amount <= 0) i++;
+      if (debtor.amount <= 0) j++;
     }
 
     // const requestingUserSettlements = settlementsToDo.filter(
@@ -127,14 +134,15 @@ async function calculateGroupSettlements(req, res) {
     // );
 
     return res.status(200).json({
-      toDo: settlementsToDo,
-      pending: pendingSettlementsOfGroup,
+      toDo : settlementsToDo,
+      pending : pendingSettlementsOfGroup,
     });
     
   } catch (err) {
+
     console.log(err);
     return res.status(500).json({
-      message: "Internal Server Error",
+      message: "Server Error",
     });
   }
 }
