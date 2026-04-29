@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
-
+import { createNewUser } from "../../api/user";
 function Signup() {
   const navigate = useNavigate();
 
@@ -20,31 +20,11 @@ function Signup() {
 
     //api call to post data here comes the backend
     try{
-      const response =await fetch("http://localhost:7000/api/user/signup",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-        },
-        body:JSON.stringify({
-          name,
-          userName,
-          email,
-          password
-        }),
-      });
-
-      //afterposting data user will get the response
-      const data=await response.json();
-
-      if(response.status==201){
-        alert("Account created sucessfully");
-        navigate("/login");
-      }else{
-        alert(data.message || "something went wrong");
-      }
-
+      const msg=await createNewUser(name,userName,email,password);
+      alert(msg);
+      navigate("/login");
     }catch(error){
-      console.log("Error:",error);
+      alert(error.message);
     }
 
   };

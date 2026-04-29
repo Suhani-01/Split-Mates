@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { NavLink, Navigate } from "react-router";
-import { UserContext } from "../App";
-import groupChat from "../assets/group.mp4";
+import { UserContext } from "../../App";
+import groupChat from "../../assets/group.mp4";
 
 function Landing() {
   // Get login status from context

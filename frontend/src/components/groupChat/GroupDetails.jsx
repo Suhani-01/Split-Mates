@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { UserContext } from "../App";
+import { UserContext } from "../../App";
 
 // This component displays the group's description and a list of all members and shows who Is the Admin
 // group info

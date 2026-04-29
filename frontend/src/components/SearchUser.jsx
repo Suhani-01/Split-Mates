@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 import { UserContext } from "../App";
-
+import { searchUser } from "../api/user";
 function SearchUser({ selectedUsers, setSelectedUsers }) {
   // Get logged-in user details to prevent adding yourself
   const { userDetails } = useContext(UserContext);
@@ -32,29 +32,14 @@ function SearchUser({ selectedUsers, setSelectedUsers }) {
     if (!user) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:7000/api/private/find-user?userName=${user}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          // Send cookies for authentication (Backend & Frontend are on different ports/domains agar same port pr hote tho browser khud hi bhej deta but since they are on diff port therefore we need to send them manually)
-          credentials: "include", 
-        },
-      );
+      const res = await searchUser(user);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setErrorMessage(data.message || "Error searching user");
-        setResults(null);
-      } else {
-        setResults(data);
-        setErrorMessage("");
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Failed to fetch users");
-      setResults([]);
+      setResults(res);
+      setErrorMessage("");
+      
+    } catch (err){
+      setErrorMessage(err.message ||"Error searching user");
+      setResults(null);
     }
   };
 

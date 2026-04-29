@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../App";
+import { UserContext } from "../../App";
 
 function MakeEntry({ setMakeEntry, groupDetails }) {
   const { userDetails } = useContext(UserContext);
@@ -165,7 +165,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       });
       if (hasError) return;
 
-      if (totalSumOfAmount !== totalAmount) {
+      if (totalSumOfAmount !== Number(totalAmount)) {
         // Floating point safety
         alert(
           `The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`,
@@ -190,7 +190,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       });
       if (hasPayerError) return;
 
-      if (totalSumOfPayer !== Number(totalAmount)) {
+      if (Number(totalSumOfPayer) !== Number(totalAmount)) {
         alert(
           `The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`,
         );

@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { UserContext } from '../App'
 import { useNavigate } from 'react-router';
+import { logoutUser } from '../api/user';
 
 function Logout() {
     
@@ -13,19 +14,9 @@ function Logout() {
      */
     const handleLogout=async()=>{
         try{
-            const response=await fetch("http://localhost:7000/api/user/logout",{
-                method:"POST",
-                // credentials: "include" -> Cookies (session) remove karne ke liye zaroori hai
-                credentials:"include",
-            });
-
-            if(response.ok){
-                // Login state false karke Landing page par bhejo
-                setIsLoggedIn(false);
-                navigate("/");
-            }else{
-                console.error("Logout Failed")
-            }
+            await logoutUser();
+            setIsLoggedIn(false);
+            navigate("/");
         }catch(err){
             console.error(err);
         }

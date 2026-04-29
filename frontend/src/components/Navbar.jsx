@@ -7,7 +7,7 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn } = useContext(UserContext);
   const { userDetails } = useContext(UserContext);
-  // console.log(userDetails);
+  
 
   return (
     <nav className="bg-slate-900 shadow-sm shadow-cyan-400 text-white sticky top-0 z-50 border-b border-slate-800">

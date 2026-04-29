@@ -1,14 +1,14 @@
 import "./App.css";
-import Login from "./components/Login";
+import Login from "./components/pages/Login";
 import Navbar from "./components/Navbar";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import Signup from "./components/Signup";
-import Landing from "./components/Landing";
-import Dashboard from "./components/Dashboard";
+import Signup from "./components/pages/Signup";
+import Landing from "./components/pages/Landing";
+import Dashboard from "./components/pages/Dashboard";
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-import CreateGroup from "./components/CreateGroup";
+import CreateGroup from "./components/pages/CreateGroup";
 
 const router = createBrowserRouter([
   {

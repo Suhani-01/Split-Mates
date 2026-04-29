@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import SearchUser from "./SearchUser";
+import SearchUser from "../SearchUser";
 import { useNavigate } from "react-router";
+import { createGroup } from "../../api/groupApi";
 
 function CreateGroup() {
   const navigate = useNavigate();
@@ -19,38 +20,18 @@ function CreateGroup() {
       return;
     }
 
-    const body = {
-      groupName,
-      description,
-      members: selectedUsers, // array of selected Users
-    };
-
     try {
-      //fetch(api, {method,headers,credentials,body})
-      const res = await fetch("http://localhost:7000/api/group/create-group", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message || "Failed to create group");
-        return;
-      }
-
+      
+      //function to creare group
+      await createGroup(groupName,description,selectedUsers);
       alert("Group created sucessfully");
+
       setGroupName("");
       setDescription("");
-      setSelectedUsers("");
+      setSelectedUsers([]);
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
-      alert("Server error");
+      alert(err.message);
     }
   };
 

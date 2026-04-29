@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { fetchGroups } from "../api/groupApi";
 
 function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
   // --- States ---
@@ -6,31 +7,21 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
 
   // --- Fetch groups when component loads ---
   useEffect(() => {
-    async function fetchGroups() {
-      const res = await fetch("http://localhost:7000/api/group/my-groups", {
-        method: "GET",
-        credentials: "include", // Send cookies for authentication
-      });
-
-      // Handle Unauthorized error
-      if (res.status === 401) {
-        const data = await res.json();
-        setErrorMessage(data.message || "Please login first");
-        return;
-      }
-
-      const data = await res.json();
-      
-      // If user has no groups
-      if (data.length === 0) {
-        setErrorMessage("No groups yet");
-      } else {
-        setGroups(data); // Save fetched groups to state
-        setErrorMessage(""); // Clear error if groups exist
+    async function fetchUserGroups() {
+      try {
+        const data = await fetchGroups();
+        if (data.length === 0) {
+          setErrorMessage("No groups yet");
+        } else {
+          setGroups(data); // Save fetched groups to state
+          setErrorMessage(""); // Clear error if groups exist
+        }
+      } catch (err) {
+        alert(err);
       }
     }
-
-    fetchGroups();
+    fetchUserGroups();
+    
   }, []); // Runs only once on mount
 
   return (
@@ -45,7 +36,8 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
           <p className="text-gray-500 flex-1 mx-auto text-sm">{errorMessage}</p>
         ) : (
           groups.map((group) => (
-            <div title="Group"
+            <div
+              title="Group"
               onClick={() => {
                 // Clicking a group sets it as 'selected' for details
                 setSelectedGroup(group);
@@ -82,7 +74,7 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
                   })}
                 </p>
               </div>
-              
+
               {/* Blue dot indicator for selected group */}
               <div
                 className={`absolute right-3 top-3 rounded-full h-3 w-3 bg-blue-600 ${selectedGroup?._id === group._id ? "block" : "hidden"}`}

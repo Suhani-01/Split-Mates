@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { NavLink, useNavigate } from 'react-router';
-import { UserContext } from '../App';
+import { UserContext } from '../../App';
+import { logInUser } from '../../api/user';
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -19,30 +20,18 @@ function Login() {
     e.preventDefault();
 
     try{
-      const response=await fetch("http://localhost:7000/api/user/login",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        // credentials: "include" -> Bhejta/recive karta hai cookies (CORS setup)
-        credentials:"include",
-        body:JSON.stringify({ email, password })
-      });
-
-      const data=await response.json();
-
-      if(response.ok){
-        alert(data.message);
+      const data=await logInUser(email,password)
+      alert(data.message);
         
-        // Update global state with user data
-        setIsLoggedIn(true);
-        setUserDetails(data); 
+      // Update global state with user data
+      setIsLoggedIn(true);
+      setUserDetails(data); 
 
-        // Navigate to Dashboard after successful login
-        navigate("/dashboard");
-      }else{
-        alert(data.message || "something went wrong");
-      }
+      // Navigate to Dashboard after successful login
+      navigate("/dashboard");
+
     }catch(err){
-      console.log("Error:",err);
+      alert(err);
     }
   };
 

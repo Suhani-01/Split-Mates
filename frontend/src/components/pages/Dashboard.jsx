@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router";
-import UserGroups from "./UserGroups";
-import SelectedGroup from "./SelectedGroup";
+import UserGroups from "../UserGroups";
+import SelectedGroup from "../groupChat/SelectedGroup";
 
 function Dashboard() {
 
