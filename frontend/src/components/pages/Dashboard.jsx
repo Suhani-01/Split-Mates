@@ -9,14 +9,14 @@ function Dashboard() {
   const [selectedGroup, setSelectedGroup] = useState();
 
   return (
-    <div className="h-[670px] overflow-y-auto  bg-gray-100 flex">
+    <div className="h-[670px] overflow-y-hidden  bg-gray-100 flex">
 
       {/* LEFT SIDEBAR */}
-      <div className="w-[35%] bg-white  p-6 flex flex-col gap-6">
+      <div className={`w-full ${selectedGroup ? "hidden md:flex" : "block"} md:w-[30%] bg-white  p-6 flex flex-col gap-6`}>
 
         <NavLink
           to="/create-group"
-          className="bg-slate-900 font-bold text-white px-4 py-2 rounded-lg text-center hover:bg-slate-700 transition"
+          className="bg-primary font-bold text-white px-4 py-2 rounded-lg text-center hover:bg-slate-700 transition"
         >
           + Create New Group
         </NavLink>
@@ -33,7 +33,7 @@ function Dashboard() {
       </div>
 
       {/* RIGHT MAIN AREA */}
-      <div className="flex-1 ">
+      <div className={` ${selectedGroup ? "block" :"hidden"} w-full md:block md:flex-1 `}>
 
         {!selectedGroup && (
           <div className="flex p-8 items-center justify-center h-full text-gray-500 text-lg">
@@ -42,10 +42,8 @@ function Dashboard() {
         )}
 
         {selectedGroup && (
-          <div className="bg-blue-100 p-8 rounded-xl shadow-sm h-full overflow-hidden">
-
-            <SelectedGroup selectedGroup={selectedGroup} />
-
+          <div className="bg-blue-100 md:p-8 md:rounded-xl shadow-sm h-full overflow-hidden">
+            <SelectedGroup setSelectedGroup={setSelectedGroup} selectedGroup={selectedGroup} />
           </div>
         )}
 

@@ -1,7 +1,7 @@
 import "./App.css";
 import Login from "./components/pages/Login";
 import Navbar from "./components/Navbar";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Outlet } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Signup from "./components/pages/Signup";
 import Landing from "./components/pages/Landing";
@@ -16,44 +16,32 @@ const router = createBrowserRouter([
     element: (
       <>
         <Navbar />
-        <Landing />
+        <Outlet /> {/* Landing, Dashboard, etc. render here */}
       </>
     ),
+    children: [
+      {
+        index: true,
+        element: <Landing />,
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "create-group",
+        element: <CreateGroup />,
+      },
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path:"/signup",
+        element:<Signup/>
+      }
+    ],
   },
-  {
-    path: "/login",
-    element: (
-      <>
-        <Login />
-      </>
-    ),
-  },
-  {
-    path: "/signup",
-    element: (
-      <>
-        <Signup />
-      </>
-    ),
-  },
-  {
-    path: "/dashboard",
-    element: (
-      <>
-        <Navbar />
-        <Dashboard />
-      </>
-    ),
-  },
-  {
-    path:"/create-group",
-    element:(
-      <>
-        <Navbar />
-        <CreateGroup/>
-      </>
-    )
-  }
 ]);
 
 const UserContext = createContext();
@@ -62,36 +50,31 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   //to store the details of logged in user
-  const [userDetails,setUserDetails]=useState(null);
+  const [userDetails, setUserDetails] = useState(null);
 
   useEffect(() => {
-
-
     //lets send req to backedn and check the token
     const checkLogin = async () => {
-        try {
-          const response = await axios.get(
-            "http://localhost:7000/api/user/check-auth",
-            { withCredentials: true },
-          );
+      try {
+        const response = await axios.get(
+          "http://localhost:7000/api/user/check-auth",
+          { withCredentials: true },
+        );
 
+        // console.log(response.data);
+        if (response.data.isLoggedIn) {
+          setIsLoggedIn(true);
 
-          // console.log(response.data);
-          if (response.data.isLoggedIn) {
-            setIsLoggedIn(true);
-
-            setUserDetails({
-              email:response.data.email,
-              userName:response.data.userName,
-              _id:response.data._id,
-            })
-       
-            
-          }
-        } catch (err) {
-          setIsLoggedIn(false);
-          console.log(err);
+          setUserDetails({
+            email: response.data.email,
+            userName: response.data.userName,
+            _id: response.data._id,
+          });
         }
+      } catch (err) {
+        setIsLoggedIn(false);
+        console.log(err);
+      }
     };
 
     checkLogin();
@@ -99,7 +82,9 @@ function App() {
 
   return (
     <div className="flex flex-col h-full">
-      <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn, userDetails, setUserDetails }}>
+      <UserContext.Provider
+        value={{ isLoggedIn, setIsLoggedIn, userDetails, setUserDetails }}
+      >
         <RouterProvider router={router} />
       </UserContext.Provider>
     </div>

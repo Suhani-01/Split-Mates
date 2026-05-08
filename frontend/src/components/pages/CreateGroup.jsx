@@ -36,9 +36,9 @@ function CreateGroup() {
   };
 
   return (
-    <div className="flex w-full bg-blue-50  justify-center gap-8 h-screen py-10">
+    <div className="flex flex-col md:flex-row w-full bg-blue-50 justify-center gap-4 md:gap-8 min-h-screen py-6 px-4 md:px-6">
       {/* Left Side: Back Button & Form */}
-      <div className="w-[700px] flex flex-col gap-4">
+      <div className="w-full md:w-[700px] flex flex-col gap-4">
         <button
           className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors cursor-pointer w-fit font-medium"
           onClick={() => navigate("/dashboard")}
@@ -95,7 +95,8 @@ function CreateGroup() {
             <div className="border border-slate-100 bg-slate-50/50 flex-1 overflow-y-auto p-3 rounded-xl flex flex-col gap-2">
               {selectedUsers.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-400 gap-2">
-                  <p className="text-sm">No members added yet</p>
+                  <p className="text-sm hidden md:block">No members added yet</p>
+                  <p className="text-sm md:hidden">Search below to add members</p>
                 </div>
               ) : (
                 selectedUsers.map((username) => (
@@ -138,7 +139,7 @@ function CreateGroup() {
       </div>
 
       {/* Right Side: Search & Add Users */}
-      <div className="w-[400px]">
+      <div className="w-full h-150 md:w-[400px]">
         <SearchUser
           selectedUsers={selectedUsers}
           setSelectedUsers={setSelectedUsers}

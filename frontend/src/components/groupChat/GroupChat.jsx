@@ -13,21 +13,19 @@ function GroupChat(props) {
 
 
       {/************* Tabs in the chat *********/}
-      <div className="w-full bg-white border-b border-slate-200 flex">
-        <button
+      <div className="w-full bg-primary border-b border-slate-200 flex">
+        <div className="rounded-lg bg-primary-light overflow-hidden w-full mx-5 my-3 flex">
+                  <button
           onClick={() => setSettlementsIsActive(true)}
           className={`flex-1 py-3 text-sm font-bold relative cursor-pointer
       ${
         SettlementsIsActive
-          ? "text-amber-600"
-          : "text-white bg-amber-600"
+          ? "text-primary bg-white"
+          : "text-white bg-primary-light"
       }`}
         >
           Settlements
-          {/* Animated Underline */}
-          {SettlementsIsActive && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600 transition-all duration-300" />
-          )}
+         
         </button>
 
         <button
@@ -35,16 +33,15 @@ function GroupChat(props) {
           className={`flex-1 py-3 text-sm font-bold transition-all relative cursor-pointer
       ${
         !SettlementsIsActive
-          ? "text-amber-600"
-          : "text-white bg-amber-600"
+          ? "text-primary bg-white"
+          : "text-white bg-primary-light"
       }`}
         >
           Activities
-          {/* Animated Underline */}
-          {!SettlementsIsActive && (
-            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600 transition-all duration-300" />
-          )}
+         
         </button>
+        </div>
+
       </div>
 
       {/* load this only when we have the groupdetails else loading...SETTLEMENT PAGE AND ACTIVITY PAGE*/}
@@ -65,7 +62,7 @@ function GroupChat(props) {
 
       {/* TO ADD EXPENSE..... */}
 
-      <div className="w-full gap-4 p-5">
+      <div className="w-full fixed  bottom-0 md:relative gap-4 p-5">
         <button
           onClick={() => {
             props.setMakeEntry(true);
