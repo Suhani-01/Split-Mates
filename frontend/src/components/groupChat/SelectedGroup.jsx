@@ -3,7 +3,7 @@ import GroupChat from "./GroupChat";
 import MakeEntry from "./MakeEntry";
 import GroupDetails from "./GroupDetails";
 import { MdOutlineInfo } from "react-icons/md";
-
+import { BASE_URL } from "../../config";
 
 function SelectedGroup({ setSelectedGroup, selectedGroup }) {
   // --- States ---
@@ -20,7 +20,7 @@ function SelectedGroup({ setSelectedGroup, selectedGroup }) {
       if (!selectedGroup) return;
 
       try {
-        const API = `http://localhost:7000/api/group/my-groups/${selectedGroup._id}`;
+        const API = `${BASE_URL}/api/group/my-groups/${selectedGroup._id}`;
         const res = await fetch(API, {
           method: "GET",
           credentials: "include",

@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
+import { BASE_URL } from "../../config";
+
 
 function MakeEntry({ setMakeEntry, groupDetails }) {
   const { userDetails } = useContext(UserContext);
@@ -231,7 +233,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
     // 6. API Call
     try {
-      const API = "http://localhost:7000/api/expense/create-expense";
+      const API = `${BASE_URL}/api/expense/create-expense`;
 
       const res = await fetch(API, {
         method: "POST",

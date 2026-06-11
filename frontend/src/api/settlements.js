@@ -1,5 +1,8 @@
+import { BASE_URL } from "../config";
+
+
 export const settleUp = async function (payload) {
-  const API = "http://localhost:7000/api/expense/settlement";
+  const API = `${BASE_URL}/api/expense/settlement`;
   const res = await fetch(API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -18,7 +21,7 @@ export const settleUp = async function (payload) {
 };
 
 export const moneyRecievedOrNot = async function (id, isRecieved) {
-  const API = "http://localhost:7000/api/expense/modify-settlement";
+  const API = `${BASE_URL}/api/expense/modify-settlement`;
 
   const res = await fetch(API, {
     method: "POST",
@@ -39,7 +42,7 @@ export const moneyRecievedOrNot = async function (id, isRecieved) {
 
 export const getSettlementsToDo = async function (selectedGroup) {
   const groupId = selectedGroup._id;
-  const API = `http://localhost:7000/api/group/my-group/settle/${groupId}`;
+  const API = `${BASE_URL}/api/group/my-group/settle/${groupId}`;
 
   const result = await fetch(API, {
     method: "GET",

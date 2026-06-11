@@ -9,6 +9,7 @@ import Dashboard from "./components/pages/Dashboard";
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import CreateGroup from "./components/pages/CreateGroup";
+import { BASE_URL } from "./config";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,7 @@ function App() {
     const checkLogin = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:7000/api/user/check-auth",
+          `${BASE_URL}/api/user/check-auth`,
           { withCredentials: true },
         );
 

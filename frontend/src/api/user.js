@@ -1,6 +1,10 @@
+import { BASE_URL } from "../config";
+
 //To create new user
+
+
 export const createNewUser = async (name, userName, email, password) => {
-  const response = await fetch("http://localhost:7000/api/user/signup", {
+  const response = await fetch(`${BASE_URL}/api/user/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +29,7 @@ export const createNewUser = async (name, userName, email, password) => {
 
 //to login user
 export const logInUser = async (email, password) => {
-  const response = await fetch("http://localhost:7000/api/user/login", {
+  const response = await fetch(`${BASE_URL}/api/user/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     // credentials: "include" -> Bhejta/recive karta hai cookies (CORS setup)
@@ -46,7 +50,7 @@ export const logInUser = async (email, password) => {
 //API call to search user
 export const searchUser = async (user) => {
   const res = await fetch(
-    `http://localhost:7000/api/private/find-user?userName=${user}`,
+    `${BASE_URL}/api/private/find-user?userName=${user}`,
     {
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -66,7 +70,7 @@ export const searchUser = async (user) => {
 
 //API call to logout the user
 export const logoutUser=async()=>{
-  const response=await fetch("http://localhost:7000/api/user/logout",{
+  const response=await fetch(`${BASE_URL}/api/user/logout`,{
     method:"POST",
     // credentials: "include" -> Cookies (session) remove karne ke liye zaroori hai
     credentials:"include",

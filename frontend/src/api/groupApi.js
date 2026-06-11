@@ -1,7 +1,7 @@
-
+import { BASE_URL } from "../config";
 //to create new group
 export const createGroup = async (groupName, description, members) => {
-  const res = await fetch("http://localhost:7000/api/group/create-group", {
+  const res = await fetch(`${BASE_URL}/api/group/create-group`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export const createGroup = async (groupName, description, members) => {
 
 //To fetch all the groups of logged in user
 export const fetchGroups = async () => {
-  const res = await fetch("http://localhost:7000/api/group/my-groups", {
+  const res = await fetch(`${BASE_URL}/api/group/my-groups`, {
     method: "GET",
     credentials: "include", // Send cookies for authentication
   });
@@ -38,7 +38,7 @@ export const fetchGroups = async () => {
 };
 
 export const getGroupActivities=async(groupDetails)=>{
-  const API=`http://localhost:7000/api/group/activites/${groupDetails._id}`;
+  const API=`${BASE_URL}/api/group/activites/${groupDetails._id}`;
 
   const response=await fetch(API,{
     method:"GET",
