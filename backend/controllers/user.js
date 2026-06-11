@@ -71,7 +71,8 @@ async function handleLoginUser(req, res) {
     // SAVE TOKEN IN THE COOKIE
     res.cookie("token", token, {
       httpOnly: true, // Front end will not be able to modify and access cookie (ie JWTtoken) (but can see in network tab) only http req can access it
-      secure: false, // production me true krna.. true will ensure that cookie will be sended to only https websites
+      secure: true, // production me true krna.. true will ensure that cookie will be sended to only https websites
+      sameSite : "none" //to allow cookie cross site
     });
 
     // console.log(user);

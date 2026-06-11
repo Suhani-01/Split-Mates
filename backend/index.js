@@ -17,7 +17,7 @@ import cookieParser from "cookie-parser";
 
 const app=express();
 app.use(cors({
-    origin:"http://localhost:5173", //will allow req only from this 
+    origin:process.env.CLIENT_URL || "http://localhost:5173", //will allow req only from this 
     credentials:true //allows cookie and authentication headers to be sent
 }));
 app.use(cookieParser()); //Because we are using cookie
@@ -49,7 +49,7 @@ app.use('/api/group',restrictToLoggedInUserOnly,GroupRouter);
 // Route related to expense and to do settlements in the GROUP
 app.use('/api/expense/',restrictToLoggedInUserOnly,ExpenseRouter)
 
-const PORT=7000;
+const PORT=process.env.PORT || 7000;
 app.listen(PORT,()=>console.log("Server Started at port",PORT));
 
 

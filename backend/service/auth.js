@@ -1,6 +1,15 @@
 // To generate token and send token in cookie
 // Because browser have cookies
-const secretKey = "Suhani$123@$";
+import 'dotenv/config';
+
+if (!process.env.JWT_SECRET) {
+  console.error("JWT_SECRET is not defined!");
+  process.exit(1);
+}
+
+const secretKey =process.env.JWT_SECRET;
+
+
 
 import jwt from "jsonwebtoken";
 
@@ -12,6 +21,7 @@ function setUser(user) {
       email: user.email,
     },
     secretKey,
+    { expiresIn: "7d" }
   );
 }
 
