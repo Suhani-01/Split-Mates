@@ -24,7 +24,7 @@ app.use(cookieParser()); //Because we are using cookie
 
 
 //Built in middleware to parse form data into readable javascript object
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({extended:false})); //jab data direct form se ata hai action =    method=
 
 //Built In middleware to parse json data into javascript object
 app.use(express.json());

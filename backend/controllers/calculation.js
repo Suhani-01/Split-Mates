@@ -17,9 +17,13 @@ async function calculateGroupSettlements(req, res) {
     const balance = {};
     
 
+    
+    // O(E*N) 
     groupExpenses.forEach((exp) => {
       
       // ----------- PAID BY ----------- 
+
+      //O(N) ->no. of member in group
       exp.paidBy.forEach((payer) => {
         const id = payer.userId.toString(); //User Id of Payer
 
@@ -29,6 +33,8 @@ async function calculateGroupSettlements(req, res) {
       });
 
       // ------------ PAID FOR ------------
+
+      //O(N)-> no. of member in group
       exp.paidFor.forEach((member) => {
         const id = member.userId.toString(); //User Id 
 
@@ -59,6 +65,8 @@ async function calculateGroupSettlements(req, res) {
 
 
 
+    //O(S)-> no. of settelements done till now
+
     settlementsOfGroup.forEach((st) => {
     
       const paidBy = st.paidBy.toString();
@@ -78,6 +86,8 @@ async function calculateGroupSettlements(req, res) {
     const creditors = [];
     const debtors = [];
 
+
+    //O(N) -> no. of members in group
     for (let user in balance) {
 
       if (balance[user] > 0) {
@@ -94,6 +104,8 @@ async function calculateGroupSettlements(req, res) {
     // ALLOCATE WHO HAD TO PAY TO WHO
     
     // WILL TACKLE LARGE AMOUNT FIRST
+
+    //O(NlogN) -> creditors and debotrs at max include krenge no. of memebers in group
     creditors.sort((a, b) => b.amount - a.amount);
     debtors.sort((a, b) => b.amount - a.amount);
 
@@ -109,6 +121,7 @@ async function calculateGroupSettlements(req, res) {
     const settlementsToDo = [];
 
     // ------------- GREEDY ---------------
+    //O(N) -> what if everybody is debtor and only single creditor
     while (i < creditors.length && j < debtors.length) {
       let creditor = creditors[i];
       let debtor = debtors[j];
@@ -121,7 +134,7 @@ async function calculateGroupSettlements(req, res) {
         to: creditor.user,
         amount: Number(settleAmount.toFixed(2)), // Clean decimals for frontend
       });
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
       creditor.amount -= settleAmount;
       debtor.amount -= settleAmount;
 

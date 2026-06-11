@@ -20,9 +20,9 @@ function Navbar() {
         {/* Logo */}
         <NavLink
           to="/"
-          className="text-2xl flex items-center text-black font-bold tracking-tighter hover:opacity-90 transition"
+          className="text-xl md:text-2xl flex items-center text-black font-bold tracking-tighter hover:opacity-90 transition"
         >
-          <IoWallet className="text-3xl mr-1 text-primary" />
+          <IoWallet className="text-2xl md:text-3xl mr-1 text-primary" />
           <span>Split</span>
           <span className="text-primary">Mates</span>
         </NavLink>
@@ -43,31 +43,31 @@ function Navbar() {
             <div className="hidden md:flex gap-4">
               <NavLink
                 to="/login"
-                className="border rounded-xl border-primary text-primary px-5 py-2  font-bold hover:text-primary-light transition"
+                className="border rounded-xl border-primary text-primary px-5 py-2 text-sm md:text-base font-bold hover:text-primary-light transition"
               >
                 Login
               </NavLink>
               <NavLink
                 to="/signup"
-                className="bg-primary text-white px-6 py-2 rounded-xl font-bold  transition shadow-lg shadow-cyan-500/20 hover:bg-primary-light"
+                className="bg-primary text-white px-6 py-2 rounded-xl text-sm md:text-base font-bold transition shadow-lg shadow-cyan-500/20 hover:bg-primary-light"
               >
                 Create Account
               </NavLink>
             </div>
           ) : (
            
-             <div className="flex  relative cursor-pointer items-center gap-2 bg-white shadow rounded-2xl px-2 py-1">
-                <div className="text-white bg-primary rounded-full w-8 flex items-center justify-center aspect-square">{userDetails.userName.charAt(0).toUpperCase()}</div>
-                <div className="text-black flex items-center gap-1 font-bold">{userDetails.userName} <span onClick={()=>{
+             <div className="flex relative cursor-pointer items-center gap-2 bg-white shadow rounded-2xl px-2 py-1">
+                <div className="text-white bg-primary rounded-full w-7 md:w-8 flex items-center justify-center aspect-square text-sm md:text-base">{userDetails.userName.charAt(0).toUpperCase()}</div>
+                <div className="text-black flex items-center gap-1 text-sm md:text-base font-bold">{userDetails.userName} <span onClick={()=>{
                   setDetailOpen(true)
                 }}><IoIosArrowDown /></span></div>
 
                 {detailOpen && <div className="absolute overflow-hidden bg-white w-full left-0 shadow top-0 rounded-2xl">
                    <div className="flex gap-2 px-2 py-1">
-                    <div className="text-white bg-primary rounded-full w-8 flex items-center justify-center aspect-square">{userDetails.userName.charAt(0).toUpperCase()}</div>
-                    <div className="text-black flex items-center gap-1 font-bold">{userDetails.userName} <span onClick={()=>setDetailOpen(false)}><IoIosArrowUp /></span></div>
+                    <div className="text-white bg-primary rounded-full w-7 md:w-8 flex items-center justify-center aspect-square text-sm md:text-base">{userDetails.userName.charAt(0).toUpperCase()}</div>
+                    <div className="text-black flex items-center gap-1 text-sm md:text-base font-bold">{userDetails.userName} <span onClick={()=>setDetailOpen(false)}><IoIosArrowUp /></span></div>
                    </div>
-                   <div className="text-text-light text-center text-sm">{userDetails.email}</div>
+                   <div className="text-text-light text-center text-xs md:text-sm">{userDetails.email}</div>
                   <div className="bg-danger/10 mt-3"><Logout/></div>
                 </div>}
              </div>

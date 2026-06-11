@@ -27,12 +27,13 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
   }, []); // Runs only once on mount
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <h1 className="text-3xl mx-auto font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent mb-4">
+    <div className="flex h-full  pb-15 flex-col gap-4">
+      <h1 className="text-3xl mx-auto font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent mb-2">
         My Groups
       </h1>
 
-      <div className="flex flex-col-reverse gap-1  overflow-y-auto">
+      <div className="flex-1 px-5 overflow-visible overflow-y-auto">
+        <div className="flex h-full flex-col-reverse  justify-end ">
         {/* Show error message if exists, else show group list */}
         {errorMessage ? (
           <p className="text-gray-500 flex-1 mx-auto text-sm">{errorMessage}</p>
@@ -47,7 +48,7 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
                 }}
                 key={group._id}
                 // Change style if this group is currently selected
-                className={`p-4 md:mx-2 shadow border flex gap-3 items-center rounded-xl relative cursor-pointer transition 
+                className={`p-4 my-1   shadow border flex gap-3 items-center rounded-xl relative cursor-pointer transition 
                 ${
                   selectedGroup?._id === group._id
                     ? "bg-blue-100 text-blue-600 border-blue-400"
@@ -88,6 +89,8 @@ function UserGroups({ groups, setGroups, selectedGroup, setSelectedGroup }) {
           })
         )}
       </div>
+      </div>
+      
     </div>
   );
 }

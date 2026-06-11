@@ -86,7 +86,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
   }, [selectedGroup?._id, refresh]);
 
   return (
-    <div className="h-full">
+    <div className="">
       {/* 1. All Clear Message: Shown when no debts or pending approvals exist */}
       {settlements?.length === 0 &&
         pendingSettlementsConfirmation?.length === 0 && (
@@ -106,33 +106,33 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
       {/* 3. Pending Confirmations Section (Waiting for receiver to say 'Yes') */}
       {pendingSettlementsConfirmation?.length > 0 && (
         <>
-          <div className="font-bold text-xs text-gray-400 mb-4">
+          <div className="font-bold text-[10px] sm:text-xs text-gray-400 mb-4">
             PENDING CONFIRMATIONS
           </div>
           <div className="flex flex-col mb-4 gap-2">
             {pendingSettlementsConfirmation.map((s) => (
               <div
-                className="bg-white border-2 border-amber-200 border-l-5 border-l-amber-400 rounded-xl p-4 shadow-sm flex gap-3 items-center"
+                className="bg-white border-2 border-amber-200 border-l-5 border-l-amber-400 rounded-md md:rounded-xl p-2 sm:p-4 shadow-sm flex gap-3 items-center"
                 key={s._id}
               >
                 <div
-                  className={`text-sm flex justify-center items-center ${userMap[s.paidBy] === userDetails.userName ? "bg-amber-400" : "bg-blue-200"} h-[40px] aspect-square text-center rounded-full`}
+                  className={`text-sm flex justify-center items-center ${userMap[s.paidBy] === userDetails?.userName ? "bg-amber-400" : "bg-blue-200"} h-[40px] aspect-square text-center rounded-full`}
                 >
                   📥
                 </div>
 
                 {/* 3.1 View for the Sender (waiting) { ☹️ I paid and waiting for the confirmation from the reciever } */}
-                {userMap[s.paidBy] === userDetails.userName && (
+                {userMap[s.paidBy] === userDetails?.userName && (
                   <div className="flex w-full gap-1 items-center justify-between">
                     <p>
                       You paid <b>{userMap[s.paidTo]}</b> <br />{" "}
-                      <span className="font-bold text-amber-600 text-lg">
+                      <span className="font-bold text-amber-600 text-sm sm:text-base">
                         ₹{s.amount}
                       </span>
                     </p>
                     <div className="bg-amber-50 flex gap-2 items-center py-2 px-3">
                       <div className=" h-2 w-2 rounded-full bg-amber-500"></div>
-                      <div className="text-sm text-amber-500 font-bold">
+                      <div className="text-xs sm:text-sm text-amber-500 font-bold">
                         Waiting for confirmation...
                       </div>
                     </div>
@@ -140,17 +140,17 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
                 )}
 
                 {/* View for the Receiver (Confirming Yes/No) { 🤔  Somebody said that he/she sended me money }*/}
-                {userMap[s.paidTo] === userDetails.userName && (
+                {userMap[s.paidTo] === userDetails?.userName && (
                   <div className="flex items-center w-full justify-between">
-                    <p className="text-gray-700 ">
+                    <p className="text-gray-700 text-sm sm:text-base">
                       Did you recieve{" "}
-                      <span className="font-bold text-blue-600">
+                      <span className="font-bold text-blue-600 text-sm sm:text-base">
                         ₹{s.amount}
                       </span>{" "}
                       from{" "}
                       <span className="font-bold">{userMap[s.paidBy]}</span>?
                     </p>
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex text-sm gap-2 justify-center">
                       <button
                         disabled={loading}
                         onClick={() => paymentRecievedOrNot(s._id, true)}
@@ -177,40 +177,40 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
       {/* 4. Group Balances Section (Who needs to pay whom) */}
       {settlements?.length > 0 && (
         <>
-          <div className="font-bold text-xs text-gray-400 mb-5">
+          <div className="font-bold text-[10px] sm:text-xs text-gray-400 mb-5">
             GROUP BALANCES
           </div>
-          <div className="flex flex-col gap-3">
+          <div className="flex text-sm sm:text-base flex-col gap-3">
             {settlements.map((s) => (
               <div
                 key={s._id}
-                className={`flex justify-between gap-3 items-center px-4 py-4 rounded-xl border
-                ${userMap[s.from] === userDetails.userName ? "bg-white border-red-200 shadow-sm" : "bg-gray-50 border-gray-100"}`}
+                className={`flex justify-between gap-3 items-center p-2 sm:p-4 rounded-md md:rounded-xl border
+                ${userMap[s.from] === userDetails?.userName ? "bg-white border-red-200 shadow-sm" : "bg-gray-50 border-gray-100"}`}
               >
-                <div className="text-2xl">
-                  {userMap[s.from] === userDetails.userName ? "💸" : "👥"}
+                <div className="text-xl sm:text-2xl">
+                  {userMap[s.from] === userDetails?.userName ? "💸" : "👥"}
                 </div>
 
-                <div className="text-sm flex-1 text-gray-800">
+                <div className=" flex-1 text-gray-800">
                   <span className="font-bold">
-                    {userMap[s.from] === userDetails.userName
+                    {userMap[s.from] === userDetails?.userName
                       ? "You"
                       : userMap[s.from]}
                   </span>{" "}
                   needs to pay to{" "}
                   <span
-                    className={`font-bold ${userMap[s.to] === userDetails.userName ? "text-green-600" : ""}`}
+                    className={`font-bold ${userMap[s.to] === userDetails?.userName ? "text-green-600" : ""}`}
                   >
-                    {userMap[s.to] === userDetails.userName
+                    {userMap[s.to] === userDetails?.userName
                       ? "You"
                       : userMap[s.to]}
                   </span>{" "}
                   <br />
-                  <span className="font-bold text-lg">₹{s.amount}</span>
+                  <span className="font-bold text-base sm:text-lg">₹{s.amount}</span>
                 </div>
 
                 {/* 'Settle Up' button only shows if the logged-in user needs to pay somebody */}
-                {userMap[s.from] === userDetails.userName && (
+                {userMap[s.from] === userDetails?.userName && (
                   <button
                     disabled={loading}
                     onClick={() => paymentDone(s)}

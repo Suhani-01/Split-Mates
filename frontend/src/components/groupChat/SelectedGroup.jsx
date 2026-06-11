@@ -48,13 +48,13 @@ function SelectedGroup({ setSelectedGroup, selectedGroup }) {
   }, [selectedGroup]);
 
   return (
-    <div className="bg-white h-full md:border overflow-y-hidden border-gray-200 flex flex-col md:rounded-xl shadow-sm overflow-hidden">
+    <div className="bg-white h-full   overflow-y-hidden flex flex-col  shadow-sm overflow-hidden">
       
       {/* If a group is selected */}
       {selectedGroup && (
         <>
           {/* Header */}
-          <div className="p-2 sm:p-3 md:p-4 bg-primary overflow-y-hidden h-16 sm:h-18 md:h-20 flex justify-between items-center">
+          <div className="p-2 h-16 sm:p-3 md:p-4 bg-primary overflow-y-hidden  sm:h-18 md:h-20 flex justify-between items-center">
             
             <div className="flex justify-center items-center gap-2 sm:gap-3">
               {/* Avatar */}
@@ -114,10 +114,11 @@ function SelectedGroup({ setSelectedGroup, selectedGroup }) {
           </div>
 
           {/* Body */}
+          
           {openGroupInfo ? (
             <GroupDetails groupDetails={groupDetails} />
           ) : (
-            <div className="flex-1 bg-blue-50 overflow-y-auto">
+            <div className="flex-1 min-h-0 bg-blue-50">
               {!makeEntry ? (
                 <GroupChat
                   groupDetails={groupDetails}
@@ -147,4 +148,4 @@ function SelectedGroup({ setSelectedGroup, selectedGroup }) {
   );
 }
 
-export default SelectedGroup;
+export default React.memo(SelectedGroup);

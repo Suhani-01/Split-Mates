@@ -28,8 +28,8 @@ function Logout() {
     
   return (
     // Click triggers the logout API and state reset
-    <button onClick={handleLogout} className="w-full flex gap-1 items-center cursor-pointer text-danger py-2 rounded-lg font-semibold px-8 transition">
-        <RiLogoutBoxLine className='text-xl' /> Logout
+    <button onClick={handleLogout} className="w-full flex gap-1 items-center cursor-pointer text-danger py-2 rounded-lg text-sm md:text-base font-semibold px-8 transition">
+        <RiLogoutBoxLine className='text-lg md:text-xl' /> Logout
     </button>
   )
 }

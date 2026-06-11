@@ -10,12 +10,13 @@ import { IoShieldCheckmark } from "react-icons/io5";
 
 function Landing() {
   // Get login status from context
+  
 
   // Content for "How it works" section
   const steps = [
     {
       id: 1,
-      emoji: <IoWallet className="text-3xl text-primary" />,
+      emoji: <IoWallet className="text-2xl md:text-3xl text-primary" />,
       color: "#2563eb1a",
       colorMain: "#2563eb",
       title: "Add Expenses",
@@ -23,7 +24,7 @@ function Landing() {
     },
     {
       id: 2,
-      emoji: <MdBalance className="text-3xl text-success" />,
+      emoji: <MdBalance className="text-2xl md:text-3xl text-success" />,
       color: "#22c55e33",
       colorMain: "#22c55e",
       title: "Split Fairly",
@@ -31,7 +32,7 @@ function Landing() {
     },
     {
       id: 3,
-      emoji: <IoShieldCheckmark className="text-warning text-3xl" />,
+      emoji: <IoShieldCheckmark className="text-warning text-2xl md:text-3xl" />,
       color: "#facc1533",
       colorMain: "#facc15",
       title: "Settle Up",
@@ -64,9 +65,9 @@ function Landing() {
   // Redirect to dashboard if user is already logged in
 
   return (
-    <div className="min-h-screen">
+    <div className="h-screen overflow-y-scroll">
       {/* Hero: Main title, intro text, and action buttons */}
-      <section className="py-12 px-4 md:px-8 bg-bg-secondary text-white">
+      <section className="py-20 px-4 md:px-8 bg-bg-secondary text-white">
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-10 items-center text-center md:text-left">
           {/* Left side: Heading and Buttons */}
 
@@ -74,7 +75,7 @@ function Landing() {
             <div className="text-primary bg-primary/10 text-xs font-bold px-2 mb-3 w-fit py-1 rounded-2xl">
               Smart, Fair, Hassle-Free
             </div>
-            <h1 className="text-black text-6xl font-bold">
+            <h1 className="text-black text-4xl md:text-6xl font-bold">
               <div className="mb-2">
                 Split <span className="text-primary">expenses.</span>
               </div>
@@ -83,29 +84,29 @@ function Landing() {
               </div>
             </h1>
 
-            <p className="text-text-light sm:text-lg md:text-xl text-gray-300 mb-8">
+            <p className="text-text-light text-base sm:text-lg md:text-xl text-gray-300 mb-8">
               Track every expense, split bills fairly, and settle up without
               awkward math.
             </p>
 
             <div className="">
               <NavLink to="/signup">
-                <button className="w-full sm:w-auto bg-primary text-text-white px-6 py-3 rounded-xl hover:bg-primary-light cursor-pointer transition">
+                <button className="w-full sm:w-auto bg-primary text-text-white text-sm md:text-base px-6 py-3 rounded-xl hover:bg-primary-light cursor-pointer transition">
                   Get Started - It's Free →
                 </button>
               </NavLink>
             </div>
 
-            <div className="text-text-light text-sm flex gap-6 mt-10">
+            <div className="text-text-light text-xs md:text-sm flex gap-6 mt-10">
               <div className="flex gap-1 items-center">
                 <div className=" bg-success/20 p-2 rounded-full">
-                  <MdOutlineCreditCardOff className="text-xl text-success" />
+                  <MdOutlineCreditCardOff className="text-lg md:text-xl text-success" />
                 </div>{" "}
                 100% Free
               </div>
               <div className="flex gap-1 items-center">
                 <div className="p-2 bg-gradient-end/20 rounded-full">
-                  <IoIosLock className="text-xl text-gradient-end" />
+                  <IoIosLock className="text-lg md:text-xl text-gradient-end" />
                 </div>{" "}
                 Secure & Private
               </div>
@@ -129,7 +130,7 @@ function Landing() {
       {/* Steps: Loop through the steps array */}
       <section className="py-12 px-4 bg-white">
         <div className="max-w-[1200px] mx-auto text-center">
-          <h2 className="font-bold text-primary">HOW IT WORKS</h2>
+          <h2 className="font-bold text-xs md:text-sm text-primary">HOW IT WORKS</h2>
           <h1 className="text-text font-bold text-2xl md:text-3xl my-3">
             Three steps to zero drama
           </h1>
@@ -138,7 +139,7 @@ function Landing() {
             {steps.map((step) => (
               <div
                 key={step.id}
-                className="flex  items-center shadow cursor-pointer hover:-translate-y-1 duration-300 rounded-xl gap-4 px-4 py-5"
+                className="flex items-center shadow cursor-pointer hover:-translate-y-1 duration-300 rounded-xl gap-4 px-4 py-5"
               >
                 <div
                   className="p-4 rounded-full"
@@ -150,13 +151,13 @@ function Landing() {
                 <div className="text-start flex flex-col gap-3">
                   <div
                     style={{ backgroundColor: step.colorMain }}
-                    className=" text-white font-bold text-xl  w-10 flex justify-center items-center rounded-full"
+                    className="text-white font-bold text-lg md:text-xl w-10 flex justify-center items-center rounded-full"
                   >
                     {step.id}
                   </div>
 
-                  <h1 className="font-bold text-gray-900">{step.title}</h1>
-                  <p className="text-gray-500 text-sm">{step.desc}</p>
+                  <h1 className="font-bold text-sm md:text-base text-gray-900">{step.title}</h1>
+                  <p className="text-gray-500 text-xs md:text-sm">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -167,7 +168,7 @@ function Landing() {
       {/* Features: Loop through the features array */}
       <section className="py-16 bg-bg-secondary">
         <div className="max-w-[1200px] mx-auto">
-          <h2 className="font-bold text-center text-primary">FEATURES</h2>
+          <h2 className="font-bold text-center text-xs md:text-sm text-primary">FEATURES</h2>
           <h1 className="text-text text-center font-bold text-2xl md:text-3xl my-3">
             Everything your group needs
           </h1>
@@ -176,18 +177,18 @@ function Landing() {
             {features.map((feature) => (
               <div
                 key={feature.id}
-                className=" shadow flex gap-6 items-center bg-white p-6 rounded-2xl"
+                className="shadow flex gap-6 items-center bg-white p-6 rounded-2xl"
               >
-                <div className="text-2xl rounded-full  p-3 max-h-20  aspect-square flex justify-center items-center bg-blue-100">
+                <div className="text-xl md:text-2xl rounded-full p-3 max-h-20 aspect-square flex justify-center items-center bg-blue-100">
                   {feature.emoji}
                 </div>
 
                 <div>
-                  <h1 className="font-bold text-gray-900 mb-2">
+                  <h1 className="font-bold text-sm md:text-base text-gray-900 mb-2">
                     {feature.title}
                   </h1>
 
-                  <p className="text-sm text-gray-500">{feature.desc}</p>
+                  <p className="text-xs md:text-sm text-gray-500">{feature.desc}</p>
                 </div>
               </div>
             ))}
@@ -196,15 +197,15 @@ function Landing() {
       </section>
 
       {/* CTA: Final call to action button */}
-      <div className="bg-primary  w-full">
-        <section className="relative max-w-[1200px] mx-auto flex justify-between gap-4 items-center py-12  text-center">
+      <div className="bg-primary w-full">
+        <section className="relative max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between gap-4 items-center py-12 px-6 text-center">
           
-          <h2 className="text-xl sm:text-2xl md:text-2xl font-bold  text-white">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
             Ready to simplify your group expenses?
           </h2>
 
           <NavLink to="/signup">
-            <button className="bg-white text-black px-6 py-2 rounded-xl font-semibold cursor-pointer hover:bg-bg-secondary transition">
+            <button className="bg-white text-black text-sm md:text-base px-6 py-2 rounded-xl font-semibold cursor-pointer hover:bg-bg-secondary transition">
               Join SplitMates Today 🚀
             </button>
           </NavLink>

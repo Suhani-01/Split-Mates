@@ -16,7 +16,7 @@ const router = createBrowserRouter([
     element: (
       <>
         <Navbar />
-        <Outlet /> {/* Landing, Dashboard, etc. render here */}
+         <Outlet />{/* Landing, Dashboard, etc. render here */}
       </>
     ),
     children: [
@@ -81,7 +81,7 @@ function App() {
   }, []); //at first render check if user is logged in or not???
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full ">
       <UserContext.Provider
         value={{ isLoggedIn, setIsLoggedIn, userDetails, setUserDetails }}
       >

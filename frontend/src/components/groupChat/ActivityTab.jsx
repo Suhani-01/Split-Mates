@@ -31,10 +31,10 @@ function ActivityTab({ groupDetails }) {
   }, [groupDetails._id]);
 
   return (
-    <div className="">
+    <div className=" ">
       {activities ? (
         activities.length === 0 ? (
-          <div className="text-center bg-green-100 rounded-xl py-5">
+          <div className="text-center bg-green-100 rounded-xl py-5 text-sm sm:text-base">
             No Activites Yet
           </div>
         ) : (
@@ -43,12 +43,12 @@ function ActivityTab({ groupDetails }) {
               // activity
               activities.map((activity) => (
                 <div
-                  className="text-center overflow-hidden bg-white"
+                  className="text-center  overflow-hidden bg-white text-sm sm:text-base"
                   key={activity._id}
                 >
                   {/* when an expense is added  */}
                   {activity.type === "EXPENSE_ADDED" && (
-                    <div className="overflow-hidden rounded-xl p-4 border-l-5 shadow-md border-l-blue-700 ">
+                    <div className="rounded-md overflow-hidden md:rounded-xl p-2 md:p-4 border-l-5 shadow-md border-l-blue-700 text-sm sm:text-base">
                       🧾
                       {activity.performedBy.map((user, index) => (
                         <span key={user}>
@@ -81,7 +81,7 @@ function ActivityTab({ groupDetails }) {
 
                   {/* when a settlement has been done and waiting in process */}
                   {activity.type === "PAYMENT_SENT" && (
-                    <div className=" rounded-xl p-4 border-l-5 shadow-md flex justify-center gap-2 flex-wrap border-l-yellow-500">
+                    <div className="rounded-md md:rounded-xl p-2 md:p-4 border-l-5 shadow-md flex justify-center gap-2 flex-wrap border-l-yellow-500 text-sm sm:text-base">
                       💸{" "}
                       <b>
                         {activity.performedBy[0] === userDetails._id
@@ -96,7 +96,7 @@ function ActivityTab({ groupDetails }) {
                           : userMap[activity.performedFor[0]]}
                       </b>
                       {"  "}
-                      <span className="bg-yellow-100 text-orange-500 text-xs p-1 px-4 border border-yellow-200">
+                      <span className="bg-yellow-100 text-orange-500 text-xs sm:text-sm p-1 px-4 border border-yellow-200">
                         ⏳ Waiting for{" "}
                         {activity.performedFor[0] === userDetails._id
                           ? "You"
@@ -108,7 +108,7 @@ function ActivityTab({ groupDetails }) {
 
                   {/* settlement has been accepted by the reciver */}
                   {activity.type === "PAYMENT_CONFIRMED" && (
-                    <div className=" rounded-xl p-4 border-l-5 shadow-md border-green-500">
+                    <div className="rounded-md md:rounded-xl p-2 md:p-4 border-l-5 shadow-md border-green-500 text-sm sm:text-base">
                       ✅{" "}
                       <b>
                         {activity.performedBy[0] === userDetails._id
@@ -127,7 +127,7 @@ function ActivityTab({ groupDetails }) {
 
                   {/* payment is declined by reciever */}
                   {activity.type === "PAYMENT_DECLINED" && (
-                    <div className="rounded-xl p-4 border-l-5 shadow-md border-red-600 ">
+                    <div className="rounded-md md:rounded-xl p-2 md:p-4 border-l-5 shadow-md border-red-600 text-sm sm:text-base">
                       ❌{" "}
                       <b>
                         {activity.performedBy[0] === userDetails._id
@@ -150,7 +150,7 @@ function ActivityTab({ groupDetails }) {
           </div>
         )
       ) : (
-        <div>Loading...</div>
+        <div className="text-sm sm:text-base">Loading...</div>
       )}
     </div>
   );
