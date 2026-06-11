@@ -197,7 +197,7 @@ function Landing() {
       </section>
 
       {/* CTA: Final call to action button */}
-      <div className="bg-primary w-full">
+      <div className="bg-primary h-fit pb-3 w-full">
         <section className="relative max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between gap-4 items-center py-12 px-6 text-center">
           
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">
