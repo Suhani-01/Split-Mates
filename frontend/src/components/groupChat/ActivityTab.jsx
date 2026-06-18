@@ -62,7 +62,7 @@ function ActivityTab({ groupDetails }) {
                               : ""}
                         </span>
                       ))}
-                      added <b className="text-blue-700">₹{activity.amount}</b>{" "}
+                      <span> </span>added <b className="text-blue-700">₹{activity.amount}</b>{" "}
                       for {activity.title} for{" "}
                       {activity.performedFor.map((user, index) => (
                         <span key={user}>
