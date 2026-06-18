@@ -5,7 +5,7 @@ import { logoutUser } from '../api/user';
 import { RiLogoutBoxLine } from "react-icons/ri";
 
 
-function Logout() {
+function Logout({setIsOpen}) {
     
     // Global login state update karne ke liye context
     const {setIsLoggedIn}=useContext(UserContext);
@@ -20,6 +20,7 @@ function Logout() {
         try{
             await logoutUser();
             setIsLoggedIn(false);
+            setIsOpen(false);
             navigate("/");
         }catch(err){
             console.error(err);

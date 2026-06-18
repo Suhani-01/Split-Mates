@@ -6,10 +6,12 @@ import { MdOutlineCreditCardOff } from "react-icons/md";
 import { IoWallet } from "react-icons/io5";
 import { MdBalance } from "react-icons/md";
 import { IoShieldCheckmark } from "react-icons/io5"; 
+import { useContext } from "react";
 
 
 function Landing() {
   // Get login status from context
+   const { isLoggedIn } = useContext(UserContext);
   
 
   // Content for "How it works" section
@@ -90,11 +92,16 @@ function Landing() {
             </p>
 
             <div className="">
-              <NavLink to="/signup">
+              {isLoggedIn ? 
+               <NavLink to="/dashboard" className="w-full sm:w-auto bg-primary text-text-white text-sm md:text-base px-6 py-3 rounded-xl hover:bg-primary-light cursor-pointer transition">Go To Dashboard  →</NavLink> 
+                :
+                <NavLink  to="/signup">
                 <button className="w-full sm:w-auto bg-primary text-text-white text-sm md:text-base px-6 py-3 rounded-xl hover:bg-primary-light cursor-pointer transition">
                   Get Started - It's Free →
                 </button>
               </NavLink>
+              }
+              
             </div>
 
             <div className="text-text-light text-xs md:text-sm flex gap-6 mt-10">

@@ -5,13 +5,15 @@ import Logout from "./Logout";
 import { IoWallet } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
-
-
+import { useLocation } from "react-router";  
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn } = useContext(UserContext);
   const { userDetails } = useContext(UserContext);
+ 
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const [detailOpen,setDetailOpen]=useState(false);
   return (
@@ -55,8 +57,8 @@ function Navbar() {
               </NavLink>
             </div>
           ) : (
-           
-             <div className="flex relative cursor-pointer items-center gap-2 bg-white shadow rounded-2xl px-2 py-1">
+            
+              <div className="flex relative cursor-pointer items-center gap-2 bg-white shadow rounded-2xl px-2 py-1">
                 <div className="text-white bg-primary rounded-full w-7 md:w-8 flex items-center justify-center aspect-square text-sm md:text-base">{userDetails.userName.charAt(0).toUpperCase()}</div>
                 <div className="text-black flex items-center gap-1 text-sm md:text-base font-bold">{userDetails.userName} <span onClick={()=>{
                   setDetailOpen(true)
@@ -68,9 +70,10 @@ function Navbar() {
                     <div className="text-black flex items-center gap-1 text-sm md:text-base font-bold">{userDetails.userName} <span onClick={()=>setDetailOpen(false)}><IoIosArrowUp /></span></div>
                    </div>
                    <div className="text-text-light text-center text-xs md:text-sm">{userDetails.email}</div>
-                  <div className="bg-danger/10 mt-3"><Logout/></div>
+                  <div className="bg-danger/10 mt-3"><Logout setIsOpen={setIsOpen}/></div>
                 </div>}
-             </div>
+             </div>  
+             
  
           )} 
 

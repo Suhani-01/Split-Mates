@@ -5,6 +5,7 @@ import { BASE_URL } from "../../config";
 
 function MakeEntry({ setMakeEntry, groupDetails }) {
   const { userDetails } = useContext(UserContext);
+  const [loading,setLoading] = useState(false);
 
   // --- Data Extraction from Props/Context ---
   const members = groupDetails?.members || [];
@@ -136,18 +137,25 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
    */
   async function addPayment(e) {
     e.preventDefault();
+    setLoading(true);
 
     // 1. Basic Validation
     if (paidFor.length === 0) {
+       setLoading(false);
       alert("Select the people you are paying for");
+ 
       return;
     }
     if (!totalAmount) {
+       setLoading(false);
       alert("Enter a valid amount");
+ 
       return;
     }
     if (titleOfPayment.trim().length === 0) {
+       setLoading(false);
       alert("Enter a title please");
+       
       return;
     }
 
@@ -165,13 +173,18 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         }
         totalSumOfAmount += Number(val);
       });
-      if (hasError) return;
+      if (hasError) {
+        setLoading(false);
+        return;
+      }
 
       if (totalSumOfAmount !== Number(totalAmount)) {
         // Floating point safety
+        setLoading(false);
         alert(
           `The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`,
         );
+         
         return;
       }
     }
@@ -190,12 +203,17 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         }
         totalSumOfPayer += amount;
       });
-      if (hasPayerError) return;
+      if (hasPayerError) {
+        setLoading(false);
+        return;
+      }
 
       if (Number(totalSumOfPayer) !== Number(totalAmount)) {
+        setLoading(false);
         alert(
           `The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`,
         );
+       
         return;
       }
     }
@@ -248,12 +266,16 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         alert(data.message || "Something went wrong");
         return;
       }
-
+      setLoading(false);
       alert("Expense added");
+     
       setMakeEntry(false);
+      
     } catch (err) {
       console.error("Failed to add expense:", err);
+      setLoading(false);
       alert("Network error. Please try again.");
+      
     }
   }
 
@@ -483,6 +505,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       {/* Footer Actions: Cancel or Save entry */}
       <div className="p-6 bg-gray-50 border-t flex gap-3">
         <button
+        disabled={loading}
           type="button"
           onClick={() => setMakeEntry(false)}
           className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-100 transition-all"
@@ -491,9 +514,10 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         </button>
         <button
           type="submit"
+          disabled={loading}
           className="flex-[2] px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-100 transition-all active:scale-[0.98]"
         >
-          Save Transaction
+          {loading ? "Saving ...":"Save Transaction"}
         </button>
       </div>
     </form>
