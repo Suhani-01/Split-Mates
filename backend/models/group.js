@@ -30,10 +30,9 @@ const groupSchema = new mongoose.Schema(
       required: true,
     },
 
-    // -- Group Profile Image -- ( Currently of No Use... )
-    profileImageURL: {
-      type: String,
-      default: "/images/groupdefault.jpg", // default group image
+    totalAmount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true } // createdAt & updatedAt

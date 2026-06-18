@@ -1,5 +1,6 @@
 import Expense from "../models/expense.js";
 import Settlement from "../models/settlement.js";
+import Group from "../models/group.js";
 
 async function calculateGroupSettlements(req, res) {
   try {
@@ -7,6 +8,10 @@ async function calculateGroupSettlements(req, res) {
     
     //fetching all the past expenses of required group
     const groupExpenses = await Expense.find({ groupId });
+
+    //fetching group for total amount return
+    const group = await Group.findById(groupId);
+
 
     // building the balance hashmap
     // balance[A] = +300
@@ -149,6 +154,7 @@ async function calculateGroupSettlements(req, res) {
     return res.status(200).json({
       toDo : settlementsToDo,
       pending : pendingSettlementsOfGroup,
+      totalAmount : group.totalAmount,
     });
     
   } catch (err) {

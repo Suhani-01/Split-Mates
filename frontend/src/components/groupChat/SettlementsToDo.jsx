@@ -1,10 +1,12 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { use, useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../../App";
+import { FaMoneyBillTrendUp } from "react-icons/fa6";
 import {
   settleUp,
   moneyRecievedOrNot,
   getSettlementsToDo,
 } from "../../api/settlements";
+import { IoWallet } from "react-icons/io5";
 
 function SettlementsToDo({ groupDetails, selectedGroup }) {
   // --- States ---
@@ -13,6 +15,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
   const [settlements, setSettlements] = useState(null); // List of who owes whom
   const [pendingSettlementsConfirmation, setPendingSettlementsConfirmation] =
   useState(null); // List of payments waiting for approval
+  const [totalAmount , setTotalAmount]=useState(0);
 
   const { userDetails } = useContext(UserContext); // Get current logged-in user info
 
@@ -71,6 +74,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
         const data = await getSettlementsToDo(selectedGroup);
         setSettlements(data.toDo);
         setPendingSettlementsConfirmation(data.pending);
+        setTotalAmount(data.totalAmount);
       } catch (err) {
         console.error(err);
         alert(err.message);
@@ -86,7 +90,17 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
   }, [selectedGroup?._id, refresh]);
 
   return (
-    <div className="">
+    <div >
+      <div  className="bg-gradient-to-r relative mb-5 rounded-lg p-4 text-white from-emerald-700 via-emerald-600 to-green-500 flex gap-3 items-center">
+        <div className="rounded-full w-14 aspect-square bg-white/20 text-3xl flex justify-center items-center">
+          <IoWallet/>
+        </div>
+        <div>
+          <p className="text-sm">Total Expenses till date </p>
+          <h1  className="font-bold text-2xl">₹{totalAmount}</h1>
+        </div>
+        <div className="absolute right-8 bottom-[25%] text-white/40 text-5xl"><FaMoneyBillTrendUp/></div>
+      </div>
       {/* 1. All Clear Message: Shown when no debts or pending approvals exist */}
       {settlements?.length === 0 &&
         pendingSettlementsConfirmation?.length === 0 && (
@@ -97,15 +111,17 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
             </div>
           </div>
         )}
-
+      
       {/* 2. Loading State Placeholder */}
       {!settlements && !pendingSettlementsConfirmation ? (
         <div>Loading...</div>
       ) : null}
+    
 
       {/* 3. Pending Confirmations Section (Waiting for receiver to say 'Yes') */}
       {pendingSettlementsConfirmation?.length > 0 && (
         <>
+       
           <div className="font-bold text-[10px] sm:text-xs text-gray-400 mb-4">
             PENDING CONFIRMATIONS
           </div>

@@ -78,7 +78,7 @@ function SelectedGroup({ setSelectedGroup, selectedGroup }) {
                       year: "numeric",
                     })}`}
                 </p>
-              </div>
+              </div> 
             </div>
 
             {/* Right Side Buttons */}

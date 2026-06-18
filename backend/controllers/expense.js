@@ -1,11 +1,13 @@
 import Activity from "../models/activity.js";
 import Expense from "../models/expense.js";
 import Settlement from "../models/settlement.js";
+import Group from "../models/group.js";
 
 // CREATE NEW EXPENSE IN THE GROUP
 async function createExpense(req, res) {
   try {
     const expense = await Expense.create(req.body);
+    const group = await Group.findById(req.body.groupId); // to update total amount
 
     //preparing activity log...
     const activityData = {
@@ -16,9 +18,13 @@ async function createExpense(req, res) {
       amount: req.body.totalAmount,
       title: req.body.title,
     };
+   
+    group.totalAmount += req.body.totalAmount;
+   
 
     //create activity log
     await Activity.create(activityData);
+    await group.save();
 
     res.status(201).json({
       message: "Expense added successfully",
