@@ -52,3 +52,22 @@ export const getGroupActivities=async(groupDetails)=>{
     throw new Error(data.message);
   }
 }
+
+export const deleteGroup = async(groupId)=>{
+  const API = `${BASE_URL}/api/group/delete-group/${groupId}`;
+
+  const res = await fetch(API,
+    {
+      method:"DELETE",
+      credentials: "include",
+    }
+  );
+
+  const data = await res.json();
+
+  if(!res.ok){
+    throw new Error(data.message || "Something went wrong");
+  }
+
+  return data;
+}

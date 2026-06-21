@@ -67,14 +67,14 @@ function Landing() {
   // Redirect to dashboard if user is already logged in
 
   return (
-    <div className="h-screen overflow-y-scroll">
+    <div>
       {/* Hero: Main title, intro text, and action buttons */}
       <section className="py-20 px-4 md:px-8 bg-bg-secondary text-white">
         <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-10 items-center text-center md:text-left">
           {/* Left side: Heading and Buttons */}
 
           <div>
-            <div className="text-primary bg-primary/10 text-xs font-bold px-2 mb-3 w-fit py-1 rounded-2xl">
+            <div className="text-primary mx-auto md:mx-0 bg-primary/10 text-xs font-bold px-2 mb-3 w-fit py-1 rounded-2xl">
               Smart, Fair, Hassle-Free
             </div>
             <h1 className="text-black text-4xl md:text-6xl font-bold">
@@ -173,7 +173,7 @@ function Landing() {
       </section>
 
       {/* Features: Loop through the features array */}
-      <section className="py-16 bg-bg-secondary">
+      <section className="py-16 px-4 bg-bg-secondary">
         <div className="max-w-[1200px] mx-auto">
           <h2 className="font-bold text-center text-xs md:text-sm text-primary">FEATURES</h2>
           <h1 className="text-text text-center font-bold text-2xl md:text-3xl my-3">

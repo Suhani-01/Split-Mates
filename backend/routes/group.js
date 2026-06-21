@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createGroup, getActivities, getGroupDetail, getUserGroups } from "../controllers/group.js";
+import { createGroup, deleteGroup, getActivities, getGroupDetail, getUserGroups } from "../controllers/group.js";
 import { calculateGroupSettlements } from "../controllers/calculation.js";
 
 const router=Router();
@@ -19,6 +19,10 @@ router.get('/my-group/settle/:groupId',calculateGroupSettlements);
 
 // SELECTED GROUP ACTIVITES
 router.get('/activites/:groupId',getActivities);
+
+//delete the group
+
+router.delete('/delete-group/:groupId',deleteGroup);
 
 
 export default router;

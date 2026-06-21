@@ -5,7 +5,7 @@ import GroupDetails from "./GroupDetails";
 import { MdOutlineInfo } from "react-icons/md";
 import { BASE_URL } from "../../config";
 
-function SelectedGroup({ setSelectedGroup, selectedGroup }) {
+function SelectedGroup({groups, setSelectedGroup, selectedGroup ,setGroups}) {
   // --- States ---
   const [groupDetails, setGroupDetails] = useState(null);
   const [openGroupInfo, setOpenGroupInfo] = useState(false);
@@ -116,7 +116,7 @@ function SelectedGroup({ setSelectedGroup, selectedGroup }) {
           {/* Body */}
           
           {openGroupInfo ? (
-            <GroupDetails groupDetails={groupDetails} />
+            <GroupDetails setGroups={setGroups} groups={groups} groupDetails={groupDetails} setGroupDetails={setGroupDetails} setSelectedGroup={setSelectedGroup} />
           ) : (
             <div className="flex-1 min-h-0 bg-blue-50">
               {!makeEntry ? (

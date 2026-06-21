@@ -41,9 +41,7 @@
   --shadow-primary: 0 10px 30px rgba(37, 99, 235, 0.25);
   --shadow-accent: 0 10px 40px rgba(34, 211, 238, 0.25);
 }
-html{
-  overflow-y: hidden;
-}
+ 
  
 *{
     font-family: sans-serif;

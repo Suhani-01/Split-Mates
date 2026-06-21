@@ -1,6 +1,10 @@
 import Activity from "../models/activity.js";
 import Group from "../models/group.js";
-import User from "../models/user.js"
+import User from "../models/user.js";
+import Settlement from "../models/settlement.js";
+import mongoose from "mongoose";
+import Expense from "../models/expense.js";
+
 
 // CREATE NEW GROUP
 async function createGroup(req,res){
@@ -110,4 +114,44 @@ async function getActivities(req,res){
     }
 }
 
-export {createGroup,getUserGroups,getGroupDetail,getActivities};
+async function deleteGroup(req,res){
+    const userId = req.user._id;
+    const { groupId } = req.params;
+
+    const group = await Group.findById(groupId);
+    if(!group){
+        return res.status(404).json({message : "Group does not exist"});
+    }
+    if(group.admin.toString() !== userId.toString()){
+        return res.status(403).json({message : "Only admin can delete this group"});
+    }
+
+    //start the session
+    const session = await mongoose.startSession();
+
+    try{
+        session.startTransaction();
+
+        
+        await Expense.deleteMany({groupId}).session(session);
+        await Activity.deleteMany({groupId}).session(session);
+        await Settlement.deleteMany({groupId}).session(session);
+        await Group.findByIdAndDelete(groupId).session(session);
+        
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return res.status(200).json({message:"Group deleted sucessfully"});
+       
+    }catch(error){
+        await session.abortTransaction();
+        session.endSession();
+        console.error("Error deleting group : ",error);
+        return res.status(500).json({message:"Failed to delete the group"});
+    }
+
+
+}
+
+export {createGroup,getUserGroups,getGroupDetail,getActivities,deleteGroup};

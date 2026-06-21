@@ -43,7 +43,7 @@ function Dashboard() {
 
         {selectedGroup && (
           <div className="h-full pb-15 overflow-hidden">
-            <SelectedGroup setSelectedGroup={setSelectedGroup} selectedGroup={selectedGroup} />
+            <SelectedGroup setGroups={setGroups} groups={groups} setSelectedGroup={setSelectedGroup} selectedGroup={selectedGroup} />
           </div>
         )}
 
