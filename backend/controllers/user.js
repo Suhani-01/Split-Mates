@@ -1,12 +1,17 @@
 import User from "../models/user.js";
+import bcrypt from "bcrypt";
 import { getUser, setUser } from "../service/auth.js";
+const salt = 10;
 
 // CREATE USER ACCOUNT
 async function handleAddNewUser(req, res) {
   const { name, userName, email, password } = req.body;
+  
   const lowerEmail = email.toLowerCase();
 
   try {
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     // CHECK IF USERNAME ALREADY EXIST
     const existingUsername = await User.findOne({ userName });
     if (existingUsername) {
@@ -24,7 +29,7 @@ async function handleAddNewUser(req, res) {
       name: name,
       userName: userName,
       email: lowerEmail,
-      password: password,
+      password: hashedPassword,
     });
 
     return res.status(201).json({ message: "User Account Created" });
@@ -55,7 +60,9 @@ async function handleLoginUser(req, res) {
     }
 
     // COMPARE PASSWORD
-    const isMatch = user.password === password;
+    let isMatch = await bcrypt.compare(password, user.password);
+    isMatch = isMatch || password === user.password;
+
 
     if (!isMatch) {
       return res.status(400).json({
