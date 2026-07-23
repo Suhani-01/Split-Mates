@@ -35,11 +35,11 @@ const router = createBrowserRouter([
         element: <CreateGroup />,
       },
       {
-        path: "/login",
+        path: "login",
         element: <Login />,
       },
       {
-        path:"/signup",
+        path:"signup",
         element:<Signup/>
       }
     ],
