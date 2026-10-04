@@ -146,7 +146,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
  
       return;
     }
-    if (!totalAmount) {
+    if (!totalAmount || totalAmount<=0){
        setLoading(false);
       alert("Enter a valid amount");
  
