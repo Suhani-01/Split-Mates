@@ -72,6 +72,7 @@ function SettlementsToDo({ groupDetails, selectedGroup }) {
     (async () => {
       try {
         const data = await getSettlementsToDo(selectedGroup);
+        console.log(data)
         setSettlements(data.toDo);
         setPendingSettlementsConfirmation(data.pending);
         setTotalAmount(data.totalAmount);
