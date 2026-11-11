@@ -1,6 +1,5 @@
 import { NavLink, Navigate } from "react-router";
-import { UserContext } from "../../App";
-import groupChat from "../../assets/group.mp4";
+import { UserContext } from "../../App"; 
 import { IoIosLock } from "react-icons/io";
 import { MdOutlineCreditCardOff } from "react-icons/md";
 import { IoWallet } from "react-icons/io5";
@@ -70,7 +69,7 @@ function Landing() {
     <div>
       {/* Hero: Main title, intro text, and action buttons */}
       <section className="py-20 px-4 md:px-8 bg-bg-secondary text-white">
-        <div className="max-w-[1200px] mx-auto grid md:grid-cols-2 gap-10 items-center text-center md:text-left">
+        <div className="max-w-[1200px] mx-auto  items-center text-center md:text-left">
           {/* Left side: Heading and Buttons */}
 
           <div>
@@ -120,17 +119,7 @@ function Landing() {
             </div>
           </div>
 
-          {/* Right side: App preview video */}
-          <div className="flex justify-center">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              src={groupChat}
-              className="w-full max-w-sm md:max-w-md rounded-3xl shadow-lg shadow-blue-400"
-            />
-          </div>
+           
         </div>
       </section>
 
