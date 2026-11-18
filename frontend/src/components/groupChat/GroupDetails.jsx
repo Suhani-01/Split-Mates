@@ -1,3 +1,4 @@
+
 import React, { useContext } from "react";
 import { UserContext } from "../../App";
 import { MdDelete } from "react-icons/md";
@@ -37,20 +38,21 @@ function GroupDetails({groups,setGroups, groupDetails ,setGroupDetails,setSelect
    
 
   return (
-    <div className="h-full bg-white shadow-md rounded-lg overflow-y-scroll ">
+    <div className="h-full min-h-0 min-w-0 bg-white overflow-y-auto overflow-x-hidden">
+
       {/* Description Section */}
-      <div className="p-4 border-b border-gray-100 bg-gray-50">
-        <h3 className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">
+      <div className="p-4 sm:p-5 border-b border-gray-100 bg-gray-50">
+        <h3 className="text-xs sm:text-sm font-semibold text-blue-600 uppercase tracking-wider mb-2">
           Description
         </h3>
-        <p className="text-gray-700 text-sm leading-relaxed">
+        <p className="text-gray-700 text-sm leading-relaxed break-words">
           {groupDetails?.description || "No description provided."}
         </p>
       </div>
 
       {/* Members Section */}
-      <div className="p-4">
-        <h3 className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">
+      <div className="p-4 sm:p-5">
+        <h3 className="text-xs sm:text-sm font-semibold text-blue-600 uppercase tracking-wider mb-3">
           Members ({groupDetails?.members?.length})
         </h3>
         
@@ -58,22 +60,22 @@ function GroupDetails({groups,setGroups, groupDetails ,setGroupDetails,setSelect
           {groupDetails?.members?.map((member) => (
             <div 
               key={member._id} 
-              className={`flex items-center justify-between p-2 ${member.userName === groupDetails.admin.userName?"bg-green-100":""} rounded-md cursor-pointer hover:bg-gray-50 transition-colors`}
+              className={`flex items-center justify-between gap-3 p-3 ${member.userName === groupDetails.admin.userName?"bg-green-50 border-green-100": "bg-white border-gray-100"} rounded-xl border hover:bg-gray-50 transition-colors min-w-0`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 {/* Avatar Placeholder */}
-                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+                <div className="w-9 h-9 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs flex-shrink-0">
                   {member.userName.charAt(0).toUpperCase()}
                 </div>
                 
-                <span className={`text-sm ${member.userName === userDetails.userName ? "font-semibold text-indigo-600" : "text-gray-800"}`}>
+                <span className={`text-sm truncate ${member.userName === userDetails.userName ? "font-semibold text-indigo-600" : "text-gray-800"}`}>
                   {member.userName === userDetails.userName ? "You" : member.userName}
                 </span>
               </div>
 
               {/* Admin Badge */}
               {member.userName === groupDetails.admin.userName && (
-                <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-sm uppercase border border-green-200">
+                <span className="bg-green-100 text-green-700 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold uppercase border border-green-200 flex-shrink-0">
                   Admin
                 </span>
               )}
@@ -83,12 +85,12 @@ function GroupDetails({groups,setGroups, groupDetails ,setGroupDetails,setSelect
       </div>
 
       { groupDetails?.admin.userName === userDetails?.userName &&
-        <div onClick={()=>deleteG()} className="W-full mx-5 mt-6 flex gap-2 text-md items-center justify-center  rounded-xl cursor-pointer font-bold p-3 bg-danger text-white">
-        
-        <div><MdDelete/> </div>
-        <div>Delete Group</div>
-       
-      </div>
+        <div onClick={()=>deleteG()} className="w-full px-4 sm:px-5 pb-5 pt-1">
+          <div className="w-full flex gap-2 text-sm sm:text-base items-center justify-center rounded-xl cursor-pointer font-semibold p-3 bg-danger text-white hover:opacity-90 active:scale-[0.99] transition">
+            <MdDelete className="text-lg"/> 
+            <span>Delete Group</span>
+          </div>
+        </div>
       }
       
     </div>

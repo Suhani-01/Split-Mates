@@ -1,3 +1,4 @@
+
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { UserContext } from "../../App";
 import { getGroupActivities } from "../../api/groupApi";
@@ -31,25 +32,25 @@ function ActivityTab({ groupDetails }) {
   }, [groupDetails._id]);
 
   return (
-    <div className=" ">
+    <div className="w-full min-w-0">
       {activities ? (
         activities.length === 0 ? (
-          <div className="text-center bg-green-100 rounded-xl py-5 text-sm sm:text-base">
+          <div className="text-center bg-green-100 rounded-xl py-5 px-3 text-sm sm:text-base">
             No Activites Yet
           </div>
         ) : (
-          <div className="flex flex-col-reverse gap-3">
+          <div className="flex flex-col-reverse gap-3 min-w-0">
             {
               // activity
               activities.map((activity) => (
                 <div
-                  className="text-center  overflow-hidden bg-white text-sm sm:text-base"
+                  className="w-full min-w-0 text-center overflow-hidden bg-white rounded-lg text-sm sm:text-base"
                   key={activity._id}
                 >
                   {/* when an expense is added  */}
                   {activity.type === "EXPENSE_ADDED" && (
-                    <div className="rounded-md overflow-hidden md:rounded-xl p-2 md:p-4 border-l-5 shadow-md border-l-blue-700 text-sm sm:text-base">
-                      🧾
+                    <div className="rounded-md overflow-hidden md:rounded-xl p-3 sm:p-4 border-l-5 shadow-md border-l-blue-700 text-sm sm:text-base leading-relaxed break-words">
+                      🧾{" "}
                       {activity.performedBy.map((user, index) => (
                         <span key={user}>
                           <b>
@@ -81,7 +82,7 @@ function ActivityTab({ groupDetails }) {
 
                   {/* when a settlement has been done and waiting in process */}
                   {activity.type === "PAYMENT_SENT" && (
-                    <div className="rounded-md md:rounded-xl p-2 md:p-4 border-l-5 shadow-md flex justify-center gap-2 flex-wrap border-l-yellow-500 text-sm sm:text-base">
+                    <div className="rounded-md md:rounded-xl p-3 sm:p-4 border-l-5 shadow-md flex justify-center items-center gap-2 flex-wrap border-l-yellow-500 text-sm sm:text-base leading-relaxed break-words">
                       💸{" "}
                       <b>
                         {activity.performedBy[0] === userDetails._id
@@ -96,7 +97,7 @@ function ActivityTab({ groupDetails }) {
                           : userMap[activity.performedFor[0]]}
                       </b>
                       {"  "}
-                      <span className="bg-yellow-100 text-orange-500 text-xs sm:text-sm p-1 px-4 border border-yellow-200">
+                      <span className="max-w-full bg-yellow-100 text-orange-500 text-xs sm:text-sm p-1 px-3 sm:px-4 border border-yellow-200 break-words">
                         ⏳ Waiting for{" "}
                         {activity.performedFor[0] === userDetails._id
                           ? "You"
@@ -108,7 +109,7 @@ function ActivityTab({ groupDetails }) {
 
                   {/* settlement has been accepted by the reciver */}
                   {activity.type === "PAYMENT_CONFIRMED" && (
-                    <div className="rounded-md md:rounded-xl p-2 md:p-4 border-l-5 shadow-md border-green-500 text-sm sm:text-base">
+                    <div className="rounded-md md:rounded-xl p-3 sm:p-4 border-l-5 shadow-md border-green-500 text-sm sm:text-base leading-relaxed break-words">
                       ✅{" "}
                       <b>
                         {activity.performedBy[0] === userDetails._id
@@ -127,7 +128,7 @@ function ActivityTab({ groupDetails }) {
 
                   {/* payment is declined by reciever */}
                   {activity.type === "PAYMENT_DECLINED" && (
-                    <div className="rounded-md md:rounded-xl p-2 md:p-4 border-l-5 shadow-md border-red-600 text-sm sm:text-base">
+                    <div className="rounded-md md:rounded-xl p-3 sm:p-4 border-l-5 shadow-md border-red-600 text-sm sm:text-base leading-relaxed break-words">
                       ❌{" "}
                       <b>
                         {activity.performedBy[0] === userDetails._id

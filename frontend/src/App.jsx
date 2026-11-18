@@ -11,15 +11,16 @@ import axios from "axios";
 import CreateGroup from "./components/pages/CreateGroup";
 import { BASE_URL } from "./config";
 
-
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <>
+      <div className="flex h-dvh min-h-0 flex-col overflow-hidden">
         <Navbar />
-         <Outlet />{/* Landing, Dashboard, etc. render here */}
-      </>
+        <main className="flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden">
+          <Outlet />
+        </main>
+      </div>
     ),
     children: [
       {
@@ -39,9 +40,9 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path:"signup",
-        element:<Signup/>
-      }
+        path: "signup",
+        element: <Signup />,
+      },
     ],
   },
 ]);
@@ -58,10 +59,9 @@ function App() {
     //lets send req to backedn and check the token
     const checkLogin = async () => {
       try {
-        const response = await axios.get(
-          `${BASE_URL}/api/user/check-auth`,
-          { withCredentials: true },
-        );
+        const response = await axios.get(`${BASE_URL}/api/user/check-auth`, {
+          withCredentials: true,
+        });
 
         // console.log(response.data);
         if (response.data.isLoggedIn) {

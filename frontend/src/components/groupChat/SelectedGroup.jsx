@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import GroupChat from "./GroupChat";
 import MakeEntry from "./MakeEntry";
@@ -48,93 +49,97 @@ function SelectedGroup({groups, setSelectedGroup, selectedGroup ,setGroups}) {
   }, [selectedGroup]);
 
   return (
-    <div className="bg-white h-full   overflow-y-hidden flex flex-col  shadow-sm overflow-hidden">
-      
+    <div className="bg-white h-full min-h-0 min-w-0 overflow-hidden flex flex-col shadow-sm">
+
       {/* If a group is selected */}
       {selectedGroup && (
         <>
           {/* Header */}
-          <div className="p-2 h-16 sm:p-3 md:p-4 bg-primary overflow-y-hidden  sm:h-18 md:h-20 flex justify-between items-center">
-            
-            <div className="flex justify-center items-center gap-2 sm:gap-3">
-              {/* Avatar */}
-              <div className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 bg-blue-400 text-white text-sm sm:text-base md:text-lg rounded-full overflow-hidden flex items-center justify-center flex-shrink-0">
-                {selectedGroup.groupName.charAt(0).toUpperCase()}
-              </div>
+          {/* Header */}
+<div className="shrink-0 px-3 sm:px-5 py-3 sm:py-4 bg-primary flex justify-between items-center gap-3 border-b border-white/10">
 
-              {/* Group Name + Meta */}
-              <div className="flex flex-col justify-center min-w-0">
-                <h1 className="text-sm sm:text-base md:text-lg font-bold text-white tracking-tight truncate max-w-[130px] sm:max-w-[200px] md:max-w-none">
-                  {selectedGroup.groupName}
-                </h1>
+  <div className="flex items-center gap-3 min-w-0 flex-1">
 
-                <p className="text-xs sm:text-xs md:text-sm text-gray-50 truncate">
-                  {(!loading && selectedGroup._id === groupDetails?._id) &&
-                    `${groupDetails?.members.length} members · ${new Date(
-                      groupDetails.updatedAt
-                    ).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}`}
-                </p>
-              </div> 
-            </div>
+    {/* Avatar */}
+    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-white/15 backdrop-blur-sm text-white text-base sm:text-lg font-semibold rounded-2xl flex items-center justify-center flex-shrink-0 border border-white/20 shadow-sm">
+      {selectedGroup.groupName.charAt(0).toUpperCase()}
+    </div>
 
-            {/* Right Side Buttons */}
-            <div className="flex gap-2 sm:gap-3 md:gap-0 items-center flex-shrink-0">
-              
-              {/* Back button (mobile only) */}
-              <div
-                onClick={() => setSelectedGroup()}
-                className="text-white text-xs sm:text-sm underline cursor-pointer md:hidden whitespace-nowrap"
-              >
-                ⮜ Back
-              </div>
+    {/* Group Name + Meta */}
+    <div className="flex flex-col justify-center min-w-0 flex-1 gap-0.5">
+      <h1 className="text-sm sm:text-lg font-semibold text-white tracking-wide truncate">
+        {selectedGroup.groupName}
+      </h1>
 
-              {/* Info / Back Toggle Button */}
-              <div
-                title={`${openGroupInfo ? "Back" : "Group info"}`}
-                className="bg-blue-400 text-white h-7 sm:h-8 px-2 sm:px-3 rounded-lg mr-1 sm:mr-2 cursor-pointer flex items-center gap-1 justify-center text-xs sm:text-sm"
-                onClick={() => setOpenGroupInfo(!openGroupInfo)}
-              >
-                {openGroupInfo ? (
-                  <>
-                    <span className="hidden md:block">Back</span>
-                    <span className="md:hidden text-xs">✕</span>
-                  </>
-                ) : (
-                  <>
-                    <MdOutlineInfo className="text-base sm:text-lg md:text-xl" />
-                    <span className="hidden md:block">Group Info</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+      <p className="text-[11px] sm:text-xs text-white/70 truncate">
+        {(!loading && selectedGroup._id === groupDetails?._id) &&
+          `${groupDetails?.members.length} members · ${new Date(
+            groupDetails.updatedAt
+          ).toLocaleString(undefined, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })}`}
+      </p>
+    </div>
+  </div>
+
+  {/* Right Side Buttons */}
+  <div className="flex gap-2 items-center flex-shrink-0">
+
+    {/* Back button (mobile only) */}
+    <div
+      onClick={() => setSelectedGroup()}
+      className="text-white/90 text-xs sm:text-sm px-2.5 py-2 rounded-lg hover:bg-white/10 cursor-pointer md:hidden whitespace-nowrap transition"
+    >
+      ⮜ Back
+    </div>
+
+    {/* Info / Back Toggle Button */}
+    <div
+      title={`${openGroupInfo ? "Back" : "Group info"}`}
+      className="bg-white/10 hover:bg-white/20 border border-white/20 text-white min-h-9 px-2.5 sm:px-3 rounded-xl cursor-pointer flex items-center gap-1.5 justify-center text-xs sm:text-sm transition shrink-0"
+      onClick={() => setOpenGroupInfo(!openGroupInfo)}
+    >
+      {openGroupInfo ? (
+        <>
+          <span className="hidden md:block">Back</span>
+          <span className="md:hidden text-xs">✕</span>
+        </>
+      ) : (
+        <>
+          <MdOutlineInfo className="text-base sm:text-lg" />
+          <span className="hidden md:block">Group Info</span>
+        </>
+      )}
+    </div>
+  </div>
+</div>
 
           {/* Body */}
-          
-          {openGroupInfo ? (
-            <GroupDetails setGroups={setGroups} groups={groups} groupDetails={groupDetails} setGroupDetails={setGroupDetails} setSelectedGroup={setSelectedGroup} />
-          ) : (
-            <div className="flex-1 min-h-0 bg-blue-50">
-              {!makeEntry ? (
-                <GroupChat
-                  groupDetails={groupDetails}
-                  selectedGroup={selectedGroup}
-                  makeEntry={makeEntry}
-                  setMakeEntry={setMakeEntry}
-                />
-              ) : (
-                <MakeEntry
-                  groupDetails={groupDetails}
-                  makeEntry={makeEntry}
-                  setMakeEntry={setMakeEntry}
-                />
-              )}
-            </div>
-          )}
+
+          <div className="flex-1 min-h-0 min-w-0 overflow-hidden">
+            {openGroupInfo ? (
+              <GroupDetails setGroups={setGroups} groups={groups} groupDetails={groupDetails} setGroupDetails={setGroupDetails} setSelectedGroup={setSelectedGroup} />
+            ) : (
+              <div className="h-full min-h-0 min-w-0 bg-blue-50 overflow-hidden">
+                {!makeEntry ? (
+                  <GroupChat
+                    groupDetails={groupDetails}
+                    selectedGroup={selectedGroup}
+                    makeEntry={makeEntry}
+                    setMakeEntry={setMakeEntry}
+                  />
+                ) : (
+                  <MakeEntry
+                    groupDetails={groupDetails}
+                    makeEntry={makeEntry}
+                    setMakeEntry={setMakeEntry}
+                  />
+                )}
+              </div>
+            )}
+          </div>
         </>
       )}
 

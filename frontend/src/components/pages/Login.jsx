@@ -49,12 +49,10 @@ function Login() {
   };
 
   return (
-    <div className="bg-bg-secondary overflow-y-hidden h-full">
-      
-      <div className="min-h-[95vh] md:mx-auto overflow-y-hidden md:max-w-[1200px] grid md:grid-cols-[1fr_1fr] md:gap-3 items-center md:justify-center">
-        <div className="hidden md:block">
+<div className="bg-bg-secondary min-h-full overflow-x-hidden overflow-y-auto">      
+<div className="min-h-[95vh] md:mx-auto md:max-w-[1200px] grid md:grid-cols-[1fr_1fr] md:gap-3 items-center md:justify-center px-4 py-6 md:py-8">        <div className="hidden md:block">
           <div className="text-primary bg-primary/20 px-4 mb-4 rounded-2xl text-xs md:text-sm py-1 border border-primary/40 w-fit mx-auto">Smart , Simple , Shared</div>
-          <div className="text-center text-text-light text-base md:text-lg max-w-100 mx-auto">The easiest way to tract , split and settle expenses with your people</div>
+          <div className="text-center text-text-light text-base md:text-lg max-w-100 mx-auto">The easiest way to track , split and settle expenses with your people</div>
           <img src={loginImg} />
         </div>
         <div className="bg-white mx-6 sm:mx-10 md:w-full md:mx-auto p-8 rounded-2xl shadow-md md:max-w-md">

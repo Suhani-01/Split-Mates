@@ -2,10 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import { BASE_URL } from "../../config";
 
-
 function MakeEntry({ setMakeEntry, groupDetails }) {
   const { userDetails } = useContext(UserContext);
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // --- Data Extraction from Props/Context ---
   const members = groupDetails?.members || [];
@@ -141,21 +140,21 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
     // 1. Basic Validation
     if (paidFor.length === 0) {
-       setLoading(false);
+      setLoading(false);
       alert("Select the people you are paying for");
- 
+
       return;
     }
-    if (!totalAmount || totalAmount<=0){
-       setLoading(false);
+    if (!totalAmount || totalAmount <= 0) {
+      setLoading(false);
       alert("Enter a valid amount");
- 
+
       return;
     }
     if (titleOfPayment.trim().length === 0) {
-       setLoading(false);
+      setLoading(false);
       alert("Enter a title please");
-       
+
       return;
     }
 
@@ -184,7 +183,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         alert(
           `The split amount ${totalSumOfAmount} do not match total paid ${totalAmount}`,
         );
-         
+
         return;
       }
     }
@@ -213,7 +212,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
         alert(
           `The total paid by individuals (₹${totalSumOfPayer}) does not match the Total Amount (₹${totalAmount})`,
         );
-       
+
         return;
       }
     }
@@ -268,24 +267,21 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       }
       setLoading(false);
       alert("Expense added");
-     
+
       setMakeEntry(false);
-      
     } catch (err) {
       console.error("Failed to add expense:", err);
       setLoading(false);
       alert("Network error. Please try again.");
-      
     }
   }
 
   return (
     <form
       onSubmit={addPayment}
-      className="flex flex-col h-full bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
+      className="flex flex-col h-full min-h-0 min-w-0 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
     >
-      <div className="flex-1 overflow-y-auto p-6 space-y-8">
-
+      <div className="flex-1 min-h-0 min-w-0 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-6 sm:space-y-8">
         {/* 1. Basic Info: Title and optional description inputs */}
         <section className="space-y-4">
           <div className="flex flex-col gap-1.5">
@@ -317,8 +313,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
         {/* 2. Amount & Payer: Handles total cost and who paid */}
         <section className="space-y-4">
-          <div className="flex items-end gap-4">
-
+          <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-4">
             {/* 2.1. Main amount input */}
             <div className="flex-1 flex flex-col gap-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
@@ -340,14 +335,15 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
 
             {/* 2.2. Paid By... */}
             {/* Toggle to switch between one person paying or multiple people */}
-            <div className="flex items-center gap-2 h-[42px] px-3 bg-blue-50 rounded-lg border border-blue-100">
+            <div className="flex items-center self-start sm:self-auto shrink-0 gap-2 min-h-[42px] px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
+              {" "}
               <input
                 type="checkbox"
                 id="multiPayer"
                 checked={isMultiplePayer}
                 onChange={() => {
                   setIsMultiplePayer(!isMultiplePayer);
-                  setPaidBy([currentUser]); // Reset to default user if toggled 
+                  setPaidBy([currentUser]); // Reset to default user if toggled
                 }}
                 className="w-4 h-4 text-blue-600 rounded cursor-pointer"
               />
@@ -361,7 +357,8 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
           </div>
 
           {/* Payer selection area */}
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+          <div className="bg-gray-50 p-3 sm:p-4 rounded-xl border border-gray-200 space-y-3 min-w-0">
+            {" "}
             <div className="flex justify-between items-center">
               <label className="text-xs font-bold uppercase tracking-wider text-gray-500">
                 Paid By
@@ -377,7 +374,6 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
                 </button>
               )}
             </div>
-
             {/* Single Payer View vs Multi Payer List */}
             {!isMultiplePayer ? (
               <div className="flex items-center gap-3 text-sm text-gray-700 font-medium bg-white p-2.5 rounded-lg border border-gray-100">
@@ -391,7 +387,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
                 {members.map((member) => (
                   <div
                     key={member._id}
-                    className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${paidBy.includes(member.userName) ? "bg-white border-blue-200 shadow-sm" : "bg-transparent border-transparent opacity-60"}`}
+                    className={`flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-lg border transition-all ${paidBy.includes(member.userName) ? "bg-white border-blue-200 shadow-sm" : "bg-transparent border-transparent opacity-60"}`}
                   >
                     <div className="flex gap-3 items-center">
                       <input
@@ -464,8 +460,7 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
               {members.map((member) => (
                 <div
                   key={member._id}
-                  className="flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
-                >
+className="flex items-center justify-between gap-2 p-3 hover:bg-gray-50 transition-colors min-w-0"                >
                   <label className="flex items-center gap-3 cursor-pointer flex-1">
                     <input
                       type="checkbox"
@@ -503,21 +498,20 @@ function MakeEntry({ setMakeEntry, groupDetails }) {
       </div>
 
       {/* Footer Actions: Cancel or Save entry */}
-      <div className="p-6 bg-gray-50 border-t flex gap-3">
-        <button
-        disabled={loading}
+<div className="shrink-0 p-3 sm:p-5 md:p-6 bg-gray-50 border-t flex gap-2 sm:gap-3">        <button
+          disabled={loading}
           type="button"
           onClick={() => setMakeEntry(false)}
-          className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-100 transition-all"
+          className="flex-1 px-3 py-2.5 sm:px-4 text-sm font-semibold  text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-100 transition-all "
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="flex-[2] px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-100 transition-all active:scale-[0.98]"
+          className="flex-[2] px-3 sm:px-4 py-2.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-100 transition-all active:scale-[0.98]"
         >
-          {loading ? "Saving ...":"Save Transaction"}
+          {loading ? "Saving ..." : "Save Transaction"}
         </button>
       </div>
     </form>
